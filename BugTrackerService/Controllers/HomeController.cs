@@ -15,16 +15,9 @@ namespace BugTrackerService.Controllers
             return View();
         }
 
-        public IActionResult About()
+        public IActionResult Report()
         {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
+            ViewData["Message"] = "Report page. ";
 
             return View();
         }
