@@ -23,6 +23,10 @@ namespace BugTrackerService.Models
             modelBuilder.Entity<EmployeeModel>().ToTable("Employees");
             modelBuilder.Entity<TicketEmployee>().ToTable("TicketEmployee");
             modelBuilder.Entity<TicketEmployee>().HasKey(c => new { c.EmployeeID, c.TicketID });
+            modelBuilder.Entity<UserModel>().HasMany(t => t.Tickets)
+                .WithOne(t => t.User);
+            modelBuilder.Entity<TicketModel>().HasOne(u => u.User)
+                .WithMany(u => u.Tickets);
         }
     }
 }

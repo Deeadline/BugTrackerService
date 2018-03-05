@@ -11,6 +11,7 @@ namespace BugTrackerService.Models
         [Display(Name = "Number")]
         [Key]
         public int TicketID { get; set; }
+        [Display(Name = "Created by")]
         public int UserID { get; set; }
         [Required]
         [StringLength(60, MinimumLength = 6)]
@@ -28,6 +29,7 @@ namespace BugTrackerService.Models
         public DateTime UpdateDate { get; set; }
         public UserModel User { get; set; }
         [DisplayFormat(NullDisplayText = "No one is assigned to this ticket")]
-        public List<EmployeeModel> Employees { get; set; }
+        [Display(Name = "Assigned")]
+        public ICollection<TicketEmployee> Employees { get; } = new List<TicketEmployee>();
     }
 }

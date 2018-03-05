@@ -40,9 +40,8 @@ namespace BugTrackerService.Models
                 return LastName + " " + FirstName;
             }
         }
-        [NotMapped]
-        public int? TicketID { get; set; }
-        [NotMapped]
-        public ICollection<TicketModel> Tickets { get; set; }
+        [Display(Name = "Tickets")]
+        public ICollection<TicketEmployee> Tickets { get; } = new List<TicketEmployee>();
+
     }
 }

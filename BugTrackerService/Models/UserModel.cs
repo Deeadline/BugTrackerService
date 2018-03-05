@@ -40,9 +40,9 @@ namespace BugTrackerService.Models
                 return LastName + " " + FirstName;
             }
         }
-        [NotMapped]
         [DisplayFormat(NullDisplayText = "No tickets")]
-        public List<TicketModel> Tickets { get; set; }
+        [Display(Name ="Tickets")]
+        public ICollection<TicketModel> Tickets { get; set; }
 
     }
 }
