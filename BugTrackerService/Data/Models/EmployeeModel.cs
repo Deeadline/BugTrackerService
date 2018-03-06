@@ -5,44 +5,43 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BugTrackerService.Models
+namespace BugTrackerService.Data.Models
 {
-    public class UserModel
+    public class EmployeeModel
     {
         [Key]
         [Display(Name = "Number")]
-        public int UserID { get; set; }
+        public int EmployeeModelID { get; set; }
         [Required]
         [StringLength(30, MinimumLength = 1)]
-        public string FirstName { get; set; }
+        public String FirstName { get; set; }
         [Required]
         [StringLength(50, MinimumLength = 1)]
-        public string LastName { get; set; }
+        public String LastName { get; set; }
         [Required]
         [EmailAddress]
-        public string EMail { get; set; }
+        public String EMail { get; set; }
         [Required]
         [StringLength(100)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
-        public string Password { get; set; }
+        public String Password { get; set; }
         [Required]
         [StringLength(100)]
-        public string CompanyName { get; set; }
+        public String CompanyName { get; set; }
         [Required]
         [Phone]
-        public string PhoneNumber { get; set; }
+        public String PhoneNumber { get; set; }
 
-        public string FullName
+        public String FullName
         {
             get
             {
                 return LastName + " " + FirstName;
             }
         }
-        [DisplayFormat(NullDisplayText = "No tickets")]
-        [Display(Name ="Tickets")]
-        public ICollection<TicketModel> Tickets { get; set; }
+        [Display(Name = "Tickets")]
+        public ICollection<TicketModel> Tickets { get; } = new List<TicketModel>();
 
     }
 }

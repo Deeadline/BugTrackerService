@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+using BugTrackerService.Data;
+using Microsoft.AspNetCore.Identity;
 using BugTrackerService.Models;
 
 namespace BugTrackerService
@@ -22,6 +23,7 @@ namespace BugTrackerService
         {
             services.AddDbContext<BugTrackerServiceContext>(options => options.UseSqlServer(
                 Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<SignInManager<ApplicationUser>>();
             services.AddMvc();
         }
 

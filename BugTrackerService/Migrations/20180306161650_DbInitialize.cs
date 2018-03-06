@@ -5,10 +5,28 @@ using System.Collections.Generic;
 
 namespace BugTrackerService.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class DbInitialize : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Employees",
+                columns: table => new
+                {
+                    EmployeeModelID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CompanyName = table.Column<string>(maxLength: 100, nullable: false),
+                    EMail = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(maxLength: 30, nullable: false),
+                    LastName = table.Column<string>(maxLength: 50, nullable: false),
+                    Password = table.Column<string>(maxLength: 100, nullable: false),
+                    PhoneNumber = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.EmployeeModelID);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -35,6 +53,7 @@ namespace BugTrackerService.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreateDate = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(maxLength: 60, nullable: false),
+                    EmployeeID = table.Column<int>(nullable: true),
                     Priority = table.Column<int>(nullable: false),
                     Status = table.Column<string>(nullable: true),
                     Title = table.Column<string>(maxLength: 60, nullable: false),
@@ -45,6 +64,12 @@ namespace BugTrackerService.Migrations
                 {
                     table.PrimaryKey("PK_Tickets", x => x.TicketID);
                     table.ForeignKey(
+                        name: "FK_Tickets_Employees_EmployeeID",
+                        column: x => x.EmployeeID,
+                        principalTable: "Employees",
+                        principalColumn: "EmployeeModelID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Tickets_Users_UserID",
                         column: x => x.UserID,
                         principalTable: "Users",
@@ -53,48 +78,19 @@ namespace BugTrackerService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Employees",
+                name: "CommentModel",
                 columns: table => new
                 {
-                    EmployeeModelID = table.Column<int>(nullable: false)
+                    CommentID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CompanyName = table.Column<string>(maxLength: 100, nullable: false),
-                    EMail = table.Column<string>(nullable: false),
-                    FirstName = table.Column<string>(maxLength: 30, nullable: false),
-                    LastName = table.Column<string>(maxLength: 50, nullable: false),
-                    Password = table.Column<string>(maxLength: 100, nullable: false),
-                    PhoneNumber = table.Column<string>(nullable: false),
-                    TicketModelTicketID = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employees", x => x.EmployeeModelID);
-                    table.ForeignKey(
-                        name: "FK_Employees_Tickets_TicketModelTicketID",
-                        column: x => x.TicketModelTicketID,
-                        principalTable: "Tickets",
-                        principalColumn: "TicketID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TicketEmployee",
-                columns: table => new
-                {
-                    EmployeeID = table.Column<int>(nullable: false),
+                    Description = table.Column<string>(nullable: false),
                     TicketID = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TicketEmployee", x => new { x.EmployeeID, x.TicketID });
+                    table.PrimaryKey("PK_CommentModel", x => x.CommentID);
                     table.ForeignKey(
-                        name: "FK_TicketEmployee_Employees_EmployeeID",
-                        column: x => x.EmployeeID,
-                        principalTable: "Employees",
-                        principalColumn: "EmployeeModelID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TicketEmployee_Tickets_TicketID",
+                        name: "FK_CommentModel_Tickets_TicketID",
                         column: x => x.TicketID,
                         principalTable: "Tickets",
                         principalColumn: "TicketID",
@@ -102,14 +98,14 @@ namespace BugTrackerService.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employees_TicketModelTicketID",
-                table: "Employees",
-                column: "TicketModelTicketID");
+                name: "IX_CommentModel_TicketID",
+                table: "CommentModel",
+                column: "TicketID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TicketEmployee_TicketID",
-                table: "TicketEmployee",
-                column: "TicketID");
+                name: "IX_Tickets_EmployeeID",
+                table: "Tickets",
+                column: "EmployeeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_UserID",
@@ -120,13 +116,13 @@ namespace BugTrackerService.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TicketEmployee");
-
-            migrationBuilder.DropTable(
-                name: "Employees");
+                name: "CommentModel");
 
             migrationBuilder.DropTable(
                 name: "Tickets");
+
+            migrationBuilder.DropTable(
+                name: "Employees");
 
             migrationBuilder.DropTable(
                 name: "Users");

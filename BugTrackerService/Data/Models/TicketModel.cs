@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BugTrackerService.Models
+namespace BugTrackerService.Data.Models
 {
     public class TicketModel
     {
@@ -13,6 +13,9 @@ namespace BugTrackerService.Models
         public int TicketID { get; set; }
         [Display(Name = "Created by")]
         public int UserID { get; set; }
+        [Display(Name = "Assigned")]
+        [DisplayFormat(NullDisplayText = "No one is assigned to this ticket")]
+        public int? EmployeeID { get; set; }
         [Required]
         [StringLength(60, MinimumLength = 6)]
         public string Title { get; set; }
@@ -28,8 +31,9 @@ namespace BugTrackerService.Models
         [DataType(DataType.Date)]
         public DateTime UpdateDate { get; set; }
         public UserModel User { get; set; }
-        [DisplayFormat(NullDisplayText = "No one is assigned to this ticket")]
-        [Display(Name = "Assigned")]
-        public ICollection<TicketEmployee> Employees { get; } = new List<TicketEmployee>();
+        public EmployeeModel Employee { get; set; }
+        [Display(Name = "Comments")]
+        [DisplayFormat(NullDisplayText = "No comments for this Ticket")]
+        public ICollection<CommentModel> Comments { get; set; }
     }
 }

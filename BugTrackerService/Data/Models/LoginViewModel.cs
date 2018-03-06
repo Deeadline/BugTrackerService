@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace BugTrackerService.Models
+namespace BugTrackerService.Data.Models
 {
     public class LoginViewModel
     {
@@ -18,5 +18,7 @@ namespace BugTrackerService.Models
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
+
+        public string ReturnUrl { get; set; }
     }
 }
