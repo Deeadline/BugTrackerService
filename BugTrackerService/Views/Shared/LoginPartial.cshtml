@@ -3,11 +3,15 @@
 @using Microsoft.AspNetCore.Identity.EntityFrameworkCore
 
 @inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @if (SignInManager.IsSignedIn(User))
 {
     <form asp-area="" asp-controller="Account" asp-action="Logout" id="logoutForm" method="post" class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
+            <li>
+                Hello @UserManager.GetUserName(User)!
+            </li>
             <li><a href="javascript:document.getElementById('logoutForm').submit()">Log out</a></li>
         </ul>
     </form>

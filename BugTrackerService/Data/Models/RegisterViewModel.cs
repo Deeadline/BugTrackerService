@@ -22,6 +22,7 @@ namespace BugTrackerService.Data.Models
         [Required]
         [StringLength(100)]
         [Display(Name = "Password")]
+        [DataType(DataType.Password)]
         public String Password { get; set; }
 
         [DataType(DataType.Password)]

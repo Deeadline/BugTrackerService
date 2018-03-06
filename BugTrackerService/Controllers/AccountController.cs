@@ -54,11 +54,11 @@ namespace BugTrackerService.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(LoginViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser() { UserName = model.Email };
+                var user = new ApplicationUser() { UserName = model.Email, Email = model.Email  };
                 var result = await userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

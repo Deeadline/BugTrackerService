@@ -24,6 +24,9 @@ namespace BugTrackerService
             services.AddDbContext<BugTrackerServiceContext>(options => options.UseSqlServer(
                 Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<SignInManager<ApplicationUser>>();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<BugTrackerServiceContext>()
+                .AddDefaultTokenProviders();
             services.AddMvc();
         }
 

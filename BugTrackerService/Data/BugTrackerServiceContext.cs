@@ -1,9 +1,11 @@
 ﻿using BugTrackerService.Data.Models;
+using BugTrackerService.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BugTrackerService.Data
 {
-    public class BugTrackerServiceContext : DbContext
+    public class BugTrackerServiceContext : IdentityDbContext<ApplicationUser>
     {
         public BugTrackerServiceContext(DbContextOptions<BugTrackerServiceContext> options) : base(options) { }
 
