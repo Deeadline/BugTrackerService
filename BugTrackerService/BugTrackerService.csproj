@@ -2,11 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <UserSecretsId>aspnet-BugTrackerService-0F3D90FE-D27F-4F04-BD42-B3DF921390E4</UserSecretsId>
+    <UserSecretsId>aspnet-BugTrackerService-B3597578-F6F3-45BB-B37E-FC1BDE1EF5B7</UserSecretsId>
   </PropertyGroup>
-  <ItemGroup>
-    <None Update="app.db" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />

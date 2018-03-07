@@ -1,7 +1,11 @@
-﻿using BugTrackerService.Data.Models;
-using BugTrackerService.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using BugTrackerService.Models;
+using BugTrackerService.Data.Models;
 
 namespace BugTrackerService.Data
 {
@@ -16,6 +20,7 @@ namespace BugTrackerService.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<UserModel>().ToTable("Users");
             modelBuilder.Entity<TicketModel>().ToTable("Tickets");
             modelBuilder.Entity<EmployeeModel>().ToTable("Employees");

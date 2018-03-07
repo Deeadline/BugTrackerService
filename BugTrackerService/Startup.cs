@@ -27,7 +27,7 @@ namespace BugTrackerService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<BugTrackerServiceContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<BugTrackerServiceContext>()
@@ -44,6 +44,7 @@ namespace BugTrackerService
         {
             if (env.IsDevelopment())
             {
+                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
