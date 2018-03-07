@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using BugTrackerService.Models;
 using BugTrackerService.Data.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugTrackerService.Data
 {
-    public class BugTrackerServiceContext : IdentityDbContext<ApplicationUser>
+    public class BugTrackerServiceContext : IdentityDbContext<UserModel>
     {
         public BugTrackerServiceContext(DbContextOptions<BugTrackerServiceContext> options) : base(options) { }
 
-        public DbSet<UserModel> Persons { get; set; }
         public DbSet<TicketModel> Tickets { get; set; }
         public DbSet<EmployeeModel> Employees { get; set; }
 

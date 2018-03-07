@@ -1,8 +1,8 @@
 @using Microsoft.AspNetCore.Identity
-@using BugTrackerService.Models
+@using BugTrackerService.Data.Models
 
-@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<UserModel> SignInManager
+@inject UserManager<UserModel> UserManager
 
 @if (SignInManager.IsSignedIn(User))
 {

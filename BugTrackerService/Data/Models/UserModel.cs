@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BugTrackerService.Data.Models
 {
-    public class UserModel
+    public class UserModel : IdentityUser
     {
         [Key]
         [Display(Name = "Number")]
@@ -19,19 +20,8 @@ namespace BugTrackerService.Data.Models
         [StringLength(50, MinimumLength = 1)]
         public string LastName { get; set; }
         [Required]
-        [EmailAddress]
-        public string EMail { get; set; }
-        [Required]
-        [StringLength(100)]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
-        public string Password { get; set; }
-        [Required]
         [StringLength(100)]
         public string CompanyName { get; set; }
-        [Required]
-        [Phone]
-        public string PhoneNumber { get; set; }
 
         public string FullName
         {
