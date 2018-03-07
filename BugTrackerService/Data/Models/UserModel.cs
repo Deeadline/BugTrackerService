@@ -10,9 +10,6 @@ namespace BugTrackerService.Data.Models
 {
     public class UserModel : IdentityUser
     {
-        [Key]
-        [Display(Name = "Number")]
-        public int UserID { get; set; }
         [Required]
         [StringLength(30, MinimumLength = 1)]
         public string FirstName { get; set; }

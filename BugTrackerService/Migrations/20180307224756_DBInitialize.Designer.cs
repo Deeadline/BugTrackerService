@@ -11,7 +11,7 @@ using System;
 namespace BugTrackerService.Migrations
 {
     [DbContext(typeof(BugTrackerServiceContext))]
-    [Migration("20180307202234_DBInitialize")]
+    [Migration("20180307224756_DBInitialize")]
     partial class DBInitialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -153,14 +153,10 @@ namespace BugTrackerService.Migrations
 
                     b.Property<bool>("TwoFactorEnabled");
 
-                    b.Property<int>("UserID");
-
                     b.Property<string>("UserName")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
-
-                    b.HasAlternateKey("UserID");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -171,6 +167,8 @@ namespace BugTrackerService.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users");
+
+                    b.HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

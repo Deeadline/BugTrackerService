@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using BugTrackerService.Models;
 using BugTrackerService.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace BugTrackerService.Data
 {
@@ -22,6 +23,7 @@ namespace BugTrackerService.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<UserModel>().ToTable("Users");
+            modelBuilder.Entity<UserModel>().HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
             modelBuilder.Entity<TicketModel>().ToTable("Tickets");
             modelBuilder.Entity<EmployeeModel>().ToTable("Employees");
             modelBuilder.Entity<UserModel>().HasMany(t => t.Tickets)

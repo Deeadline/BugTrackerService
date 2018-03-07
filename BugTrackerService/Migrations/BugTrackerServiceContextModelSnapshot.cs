@@ -92,8 +92,6 @@ namespace BugTrackerService.Migrations
 
                     b.Property<DateTime>("UpdateDate");
 
-                    b.Property<int>("UserID");
-
                     b.Property<string>("UserId");
 
                     b.HasKey("TicketID");
@@ -152,14 +150,10 @@ namespace BugTrackerService.Migrations
 
                     b.Property<bool>("TwoFactorEnabled");
 
-                    b.Property<int>("UserID");
-
                     b.Property<string>("UserName")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
-
-                    b.HasAlternateKey("UserID");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -170,6 +164,8 @@ namespace BugTrackerService.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users");
+
+                    b.HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
