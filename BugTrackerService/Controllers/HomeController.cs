@@ -1,6 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using BugTrackerService.Data.Models;
+using BugTrackerService.Models;
 
 namespace BugTrackerService.Controllers
 {
@@ -11,28 +15,17 @@ namespace BugTrackerService.Controllers
             return View();
         }
 
-        public IActionResult Report()
+        public IActionResult About()
         {
-            ViewData["Message"] = "Report page. ";
+            ViewData["Message"] = "Your application description page.";
 
             return View();
         }
 
-        public IActionResult Dashboard()
+        public IActionResult Contact()
         {
-            ViewData["Message"] = "Dashboard page. ";
-            return View();
-        }
+            ViewData["Message"] = "Your contact page.";
 
-        public IActionResult Profile()
-        {
-            ViewData["Message"] = "Profile page. ";
-            return View();
-        }
-
-        public IActionResult Register()
-        {
-            ViewData["Message"] = "Register page. ";
             return View();
         }
 
