@@ -11,7 +11,7 @@ using System;
 namespace BugTrackerService.Migrations
 {
     [DbContext(typeof(BugTrackerServiceContext))]
-    [Migration("20180307224756_DBInitialize")]
+    [Migration("20180312170243_DBInitialize")]
     partial class DBInitialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,58 +21,46 @@ namespace BugTrackerService.Migrations
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("BugTrackerService.Data.Models.CommentModel", b =>
+            modelBuilder.Entity("BugTrackerService.Data.Models.Comment", b =>
                 {
                     b.Property<int>("CommentID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Content")
                         .IsRequired();
 
+                    b.Property<string>("SendTime");
+
                     b.Property<int>("TicketID");
+
+                    b.Property<int>("UserId");
+
+                    b.Property<string>("UserId1");
 
                     b.HasKey("CommentID");
 
                     b.HasIndex("TicketID");
 
-                    b.ToTable("CommentModel");
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("BugTrackerService.Data.Models.EmployeeModel", b =>
+            modelBuilder.Entity("BugTrackerService.Data.Models.Product", b =>
                 {
-                    b.Property<int>("EmployeeModelID")
+                    b.Property<int>("ProductId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasMaxLength(100);
+                    b.Property<string>("Name");
 
-                    b.Property<string>("EMail")
-                        .IsRequired();
+                    b.HasKey("ProductId");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(30);
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(50);
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(100);
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired();
-
-                    b.HasKey("EmployeeModelID");
-
-                    b.ToTable("Employees");
+                    b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("BugTrackerService.Data.Models.TicketModel", b =>
+            modelBuilder.Entity("BugTrackerService.Data.Models.Ticket", b =>
                 {
-                    b.Property<int>("TicketID")
+                    b.Property<int>("TicketId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreateDate");
@@ -81,9 +69,13 @@ namespace BugTrackerService.Migrations
                         .IsRequired()
                         .HasMaxLength(60);
 
-                    b.Property<int?>("EmployeeID");
+                    b.Property<int?>("EmployeeId");
 
                     b.Property<int>("Priority");
+
+                    b.Property<string>("ProductId");
+
+                    b.Property<int?>("ProductId1");
 
                     b.Property<string>("Status");
 
@@ -93,20 +85,20 @@ namespace BugTrackerService.Migrations
 
                     b.Property<DateTime>("UpdateDate");
 
-                    b.Property<int>("UserID");
+                    b.Property<int>("UserId");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId1");
 
-                    b.HasKey("TicketID");
+                    b.HasKey("TicketId");
 
-                    b.HasIndex("EmployeeID");
+                    b.HasIndex("ProductId1");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId1");
 
                     b.ToTable("Tickets");
                 });
 
-            modelBuilder.Entity("BugTrackerService.Data.Models.UserModel", b =>
+            modelBuilder.Entity("BugTrackerService.Data.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -155,6 +147,8 @@ namespace BugTrackerService.Migrations
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256);
+
+                    b.Property<string>("WorkerCardNumber");
 
                     b.HasKey("Id");
 
@@ -279,23 +273,27 @@ namespace BugTrackerService.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("BugTrackerService.Data.Models.CommentModel", b =>
+            modelBuilder.Entity("BugTrackerService.Data.Models.Comment", b =>
                 {
-                    b.HasOne("BugTrackerService.Data.Models.TicketModel", "Ticket")
+                    b.HasOne("BugTrackerService.Data.Models.Ticket", "Ticket")
                         .WithMany("Comments")
                         .HasForeignKey("TicketID")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BugTrackerService.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId1");
                 });
 
-            modelBuilder.Entity("BugTrackerService.Data.Models.TicketModel", b =>
+            modelBuilder.Entity("BugTrackerService.Data.Models.Ticket", b =>
                 {
-                    b.HasOne("BugTrackerService.Data.Models.EmployeeModel", "Employee")
-                        .WithMany("Tickets")
-                        .HasForeignKey("EmployeeID");
+                    b.HasOne("BugTrackerService.Data.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId1");
 
-                    b.HasOne("BugTrackerService.Data.Models.UserModel", "User")
+                    b.HasOne("BugTrackerService.Data.Models.User", "User")
                         .WithMany("Tickets")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId1");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -308,7 +306,7 @@ namespace BugTrackerService.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("BugTrackerService.Data.Models.UserModel")
+                    b.HasOne("BugTrackerService.Data.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -316,7 +314,7 @@ namespace BugTrackerService.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("BugTrackerService.Data.Models.UserModel")
+                    b.HasOne("BugTrackerService.Data.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -329,7 +327,7 @@ namespace BugTrackerService.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("BugTrackerService.Data.Models.UserModel")
+                    b.HasOne("BugTrackerService.Data.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -337,7 +335,7 @@ namespace BugTrackerService.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("BugTrackerService.Data.Models.UserModel")
+                    b.HasOne("BugTrackerService.Data.Models.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);

@@ -7,16 +7,18 @@ using System.Threading.Tasks;
 
 namespace BugTrackerService.Data.Models
 {
-    public class TicketModel
+    public class Ticket
     {
         [Display(Name = "Number")]
         [Key]
-        public int TicketID { get; set; }
+        public int TicketId { get; set; }
         [Display(Name = "Created by")]
-        public int UserID { get; set; }
+        public int UserId { get; set; }
         [Display(Name = "Assigned")]
         [DisplayFormat(NullDisplayText = "No one is assigned to this ticket")]
-        public int? EmployeeID { get; set; }
+        public int? EmployeeId { get; set; }
+        [Display(Name = "Product")]
+        public string ProductId { get; set; }
         [Required]
         [StringLength(60, MinimumLength = 6)]
         public string Title { get; set; }
@@ -31,10 +33,10 @@ namespace BugTrackerService.Data.Models
         [Display(Name = "Update Date")]
         [DataType(DataType.Date)]
         public DateTime UpdateDate { get; set; }
-        public UserModel User { get; set; }
-        public EmployeeModel Employee { get; set; }
+        public User User { get; set; }
+        public Product Product { get; set; }
         [Display(Name = "Comments")]
         [DisplayFormat(NullDisplayText = "No comments for this Ticket")]
-        public ICollection<CommentModel> Comments { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }
 }

@@ -6,15 +6,21 @@ using System.Threading.Tasks;
 
 namespace BugTrackerService.Data.Models
 {
-    public class CommentModel
+    public class Comment
     {
         [Key]
         [Display(Name = "Number")]
         public int CommentID { get; set; }
         public int TicketID { get; set; }
         [Required]
-        public string Description { get; set; }
+        public string Content { get; set; }
 
-        public TicketModel Ticket { get; set; }
+        public string SendTime { get; set; }
+        [Display(Name = "Author")]
+        public int UserId { get; set; }
+
+        public User User { get; set; }
+
+        public Ticket Ticket { get; set; }
     }
 }

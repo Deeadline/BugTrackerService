@@ -11,24 +11,24 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace BugTrackerService.Data
 {
-    public class BugTrackerServiceContext : IdentityDbContext<UserModel>
+    public class BugTrackerServiceContext : IdentityDbContext<User>
     {
         public BugTrackerServiceContext(DbContextOptions<BugTrackerServiceContext> options) : base(options) { }
 
-        public DbSet<TicketModel> Tickets { get; set; }
-        public DbSet<EmployeeModel> Employees { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Product> Products { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<UserModel>().ToTable("Users");
-            modelBuilder.Entity<UserModel>().HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-            modelBuilder.Entity<TicketModel>().ToTable("Tickets");
-            modelBuilder.Entity<EmployeeModel>().ToTable("Employees");
-            modelBuilder.Entity<UserModel>().HasMany(t => t.Tickets)
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<User>().HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+            modelBuilder.Entity<Ticket>().ToTable("Tickets");
+            modelBuilder.Entity<User>().HasMany(t => t.Tickets)
                 .WithOne(t => t.User);
-            modelBuilder.Entity<TicketModel>().HasOne(u => u.User)
+            modelBuilder.Entity<Ticket>().HasOne(u => u.User)
                 .WithMany(u => u.Tickets);
         }
     }

@@ -30,10 +30,10 @@ namespace BugTrackerService
             services.AddDbContext<BugTrackerServiceContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<UserModel, IdentityRole>()
+            services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<BugTrackerServiceContext>()
                 .AddDefaultTokenProviders();
-
+            services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 

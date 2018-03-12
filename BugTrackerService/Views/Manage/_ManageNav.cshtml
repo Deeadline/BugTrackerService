@@ -1,6 +1,6 @@
 ﻿@using BugTrackerService.Views.Manage
 @using BugTrackerService.Data.Models
-@inject SignInManager<UserModel> SignInManager
+@inject SignInManager<User> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

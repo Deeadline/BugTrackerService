@@ -24,21 +24,16 @@ namespace BugTrackerService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Employees",
+                name: "Products",
                 columns: table => new
                 {
-                    EmployeeModelID = table.Column<int>(nullable: false)
+                    ProductId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CompanyName = table.Column<string>(maxLength: 100, nullable: false),
-                    EMail = table.Column<string>(nullable: false),
-                    FirstName = table.Column<string>(maxLength: 30, nullable: false),
-                    LastName = table.Column<string>(maxLength: 50, nullable: false),
-                    Password = table.Column<string>(maxLength: 100, nullable: false),
-                    PhoneNumber = table.Column<string>(nullable: false)
+                    Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Employees", x => x.EmployeeModelID);
+                    table.PrimaryKey("PK_Products", x => x.ProductId);
                 });
 
             migrationBuilder.CreateTable(
@@ -62,7 +57,8 @@ namespace BugTrackerService.Migrations
                     PhoneNumberConfirmed = table.Column<bool>(nullable: false),
                     SecurityStamp = table.Column<string>(nullable: true),
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    UserName = table.Column<string>(maxLength: 256, nullable: true)
+                    UserName = table.Column<string>(maxLength: 256, nullable: true),
+                    WorkerCardNumber = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -179,52 +175,64 @@ namespace BugTrackerService.Migrations
                 name: "Tickets",
                 columns: table => new
                 {
-                    TicketID = table.Column<int>(nullable: false)
+                    TicketId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreateDate = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(maxLength: 60, nullable: false),
-                    EmployeeID = table.Column<int>(nullable: true),
+                    EmployeeId = table.Column<int>(nullable: true),
                     Priority = table.Column<int>(nullable: false),
+                    ProductId = table.Column<string>(nullable: true),
+                    ProductId1 = table.Column<int>(nullable: true),
                     Status = table.Column<string>(nullable: true),
                     Title = table.Column<string>(maxLength: 60, nullable: false),
                     UpdateDate = table.Column<DateTime>(nullable: false),
-                    UserId = table.Column<string>(nullable: false)
+                    UserId = table.Column<int>(nullable: false),
+                    UserId1 = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tickets", x => x.TicketID);
+                    table.PrimaryKey("PK_Tickets", x => x.TicketId);
                     table.ForeignKey(
-                        name: "FK_Tickets_Employees_EmployeeID",
-                        column: x => x.EmployeeID,
-                        principalTable: "Employees",
-                        principalColumn: "EmployeeModelID",
+                        name: "FK_Tickets_Products_ProductId1",
+                        column: x => x.ProductId1,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Tickets_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Tickets_Users_UserId1",
+                        column: x => x.UserId1,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CommentModel",
+                name: "Comments",
                 columns: table => new
                 {
                     CommentID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Description = table.Column<string>(nullable: false),
-                    TicketID = table.Column<int>(nullable: false)
+                    Content = table.Column<string>(nullable: false),
+                    SendTime = table.Column<string>(nullable: true),
+                    TicketID = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false),
+                    UserId1 = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CommentModel", x => x.CommentID);
+                    table.PrimaryKey("PK_Comments", x => x.CommentID);
                     table.ForeignKey(
-                        name: "FK_CommentModel_Tickets_TicketID",
+                        name: "FK_Comments_Tickets_TicketID",
                         column: x => x.TicketID,
                         principalTable: "Tickets",
-                        principalColumn: "TicketID",
+                        principalColumn: "TicketId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Comments_Users_UserId1",
+                        column: x => x.UserId1,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -255,24 +263,35 @@ namespace BugTrackerService.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CommentModel_TicketID",
-                table: "CommentModel",
+                name: "IX_Comments_TicketID",
+                table: "Comments",
                 column: "TicketID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_EmployeeID",
-                table: "Tickets",
-                column: "EmployeeID");
+                name: "IX_Comments_UserId1",
+                table: "Comments",
+                column: "UserId1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_UserId",
+                name: "IX_Tickets_ProductId1",
                 table: "Tickets",
-                column: "UserId");
+                column: "ProductId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_UserId1",
+                table: "Tickets",
+                column: "UserId1");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailNormalizedIndex",
+                table: "Users",
+                column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "Users",
-                column: "NormalizedEmail");
+                unique: true,
+                column: "Email");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -300,7 +319,7 @@ namespace BugTrackerService.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CommentModel");
+                name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -309,7 +328,7 @@ namespace BugTrackerService.Migrations
                 name: "Tickets");
 
             migrationBuilder.DropTable(
-                name: "Employees");
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Users");

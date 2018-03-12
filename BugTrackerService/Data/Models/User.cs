@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BugTrackerService.Data.Models
 {
-    public class UserModel : IdentityUser
+    public class User : IdentityUser
     {
         [Required]
         [StringLength(30, MinimumLength = 1)]
@@ -19,7 +19,7 @@ namespace BugTrackerService.Data.Models
         [Required]
         [StringLength(100)]
         public string CompanyName { get; set; }
-
+        public string WorkerCardNumber { get; set; }
         public string FullName
         {
             get
@@ -29,7 +29,7 @@ namespace BugTrackerService.Data.Models
         }
         [DisplayFormat(NullDisplayText = "No tickets")]
         [Display(Name ="Tickets")]
-        public ICollection<TicketModel> Tickets { get; set; }
+        public ICollection<Ticket> Tickets { get; set; }
 
     }
 }
