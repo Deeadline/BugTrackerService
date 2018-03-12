@@ -8,6 +8,9 @@ using Microsoft.Extensions.Logging;
 using BugTrackerService.Models.AccountViewModels;
 using BugTrackerService.Services;
 using BugTrackerService.Data.Models;
+using BugTrackerService.Data;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace BugTrackerService.Controllers
 {
@@ -15,6 +18,7 @@ namespace BugTrackerService.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
+        private readonly BugTrackerServiceContext _dataBase;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -24,12 +28,14 @@ namespace BugTrackerService.Controllers
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IEmailSender emailSender,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            BugTrackerServiceContext dataBase)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
+            _dataBase = dataBase;
         }
 
         [TempData]
@@ -52,11 +58,12 @@ namespace BugTrackerService.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            var user = await _dataBase.Users.SingleAsync(u => u.Email.Equals(model.Email));
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, lockoutOnFailure: true);
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
@@ -213,9 +220,10 @@ namespace BugTrackerService.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            
             if (ModelState.IsValid)
             {
-                var user = new User { FirstName = model.Name, LastName = model.Surname, Email = model.Email, UserName = model.Surname, CompanyName = model.CompanyName, PhoneNumber = model.PhoneNumber };
+                var user = new User { FirstName = model.Name, LastName = model.Surname, Email = model.Email, UserName = model.Email, CompanyName = model.CompanyName, PhoneNumber = model.PhoneNumber };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -227,6 +235,10 @@ namespace BugTrackerService.Controllers
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation("User created a new account with password.");
+
+                    await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("FirstName", user.FirstName));
+                    await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("LastName", user.LastName));
+
                     return RedirectToLocal(returnUrl);
                 }
                 AddErrors(result);

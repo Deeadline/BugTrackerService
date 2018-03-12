@@ -21,7 +21,6 @@ namespace BugTrackerService.Models.AccountViewModels
         [Display(Name = "Password")]
         [DataType(DataType.Password)]
         public String Password { get; set; }
-
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
@@ -29,8 +28,11 @@ namespace BugTrackerService.Models.AccountViewModels
         [Required]
         [StringLength(100)]
         public String CompanyName { get; set; }
+        [StringLength(20)]
+        public string WorkerCardNumber { get; set; }
         [Required]
         [Phone]
         public String PhoneNumber { get; set; }
+
     }
 }

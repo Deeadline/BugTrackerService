@@ -13,6 +13,10 @@ namespace BugTrackerService.Data
 {
     public class BugTrackerServiceContext : IdentityDbContext<User>
     {
+        public BugTrackerServiceContext()
+        {
+        }
+
         public BugTrackerServiceContext(DbContextOptions<BugTrackerServiceContext> options) : base(options) { }
 
         public DbSet<Ticket> Tickets { get; set; }

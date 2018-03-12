@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Identity
 @using BugTrackerService.Data.Models
+@using BugTrackerService.Extensions
 
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
@@ -9,7 +10,7 @@
     <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
             <li>
-                <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+                <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">Hello @SignInManager.Context.User.GetFirstName() @SignInManager.Context.User.GetLastName() </a>
             </li>
             <li>
                 <button type="submit" class="btn btn-link navbar-btn navbar-link"><span class="glyphicon glyphicon-log-out"></span>Log out</button>

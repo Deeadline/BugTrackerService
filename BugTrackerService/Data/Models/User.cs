@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace BugTrackerService.Data.Models
@@ -30,6 +31,5 @@ namespace BugTrackerService.Data.Models
         [DisplayFormat(NullDisplayText = "No tickets")]
         [Display(Name ="Tickets")]
         public ICollection<Ticket> Tickets { get; set; }
-
     }
 }
