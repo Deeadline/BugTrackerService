@@ -9,15 +9,17 @@ namespace BugTrackerService.Data.Models
 {
     public class Ticket
     {
-        [Display(Name = "Number")]
+        private DateTime _createDate;
+        private DateTime _updateDate;
+        private Priority _priority;
+        private int _id;
+
         [Key]
-        public int TicketId { get; set; }
+        public int TicketId { get => _id; set => _id = value; }
         [Display(Name = "Created by")]
-        public int UserId { get; set; }
-        [Display(Name = "Assigned")]
+        public string OwnerId { get; set; }
         [DisplayFormat(NullDisplayText = "No one is assigned to this ticket")]
-        public int? EmployeeId { get; set; }
-        [Display(Name = "Product")]
+        public string EmployeeId { get; set; }
         public string ProductId { get; set; }
         [Required]
         [StringLength(60, MinimumLength = 6)]
@@ -25,18 +27,29 @@ namespace BugTrackerService.Data.Models
         [Required]
         [StringLength(60, MinimumLength = 6)]
         public string Description { get; set; }
-        public string Status { get; set; }
-        public int Priority { get; set; }
+        public Status Status { get; set; }
+        public Priority Priority { get => _priority; set => _priority = value; }
         [Display(Name = "Create Date")]
         [DataType(DataType.Date)]
-        public DateTime CreateDate { get; set; }
+        public DateTime CreateDate { get => _createDate; set => _createDate = DateTime.Now; }
         [Display(Name = "Update Date")]
         [DataType(DataType.Date)]
-        public DateTime UpdateDate { get; set; }
+        public DateTime UpdateDate { get => _updateDate; set => _updateDate = DateTime.Now; }
         public User User { get; set; }
         public Product Product { get; set; }
         [Display(Name = "Comments")]
         [DisplayFormat(NullDisplayText = "No comments for this Ticket")]
         public ICollection<Comment> Comments { get; set; }
+    }
+    public enum Status
+    {
+        Progress,
+        Completed
+    }
+    public enum Priority
+    {
+        Low,
+        Medium,
+        High
     }
 }

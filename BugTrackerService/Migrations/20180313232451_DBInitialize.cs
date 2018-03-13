@@ -179,15 +179,15 @@ namespace BugTrackerService.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreateDate = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(maxLength: 60, nullable: false),
-                    EmployeeId = table.Column<int>(nullable: true),
+                    EmployeeId = table.Column<string>(nullable: true),
+                    OwnerId = table.Column<string>(nullable: true),
                     Priority = table.Column<int>(nullable: false),
                     ProductId = table.Column<string>(nullable: true),
                     ProductId1 = table.Column<int>(nullable: true),
-                    Status = table.Column<string>(nullable: true),
+                    Status = table.Column<int>(nullable: false),
                     Title = table.Column<string>(maxLength: 60, nullable: false),
                     UpdateDate = table.Column<DateTime>(nullable: false),
-                    UserId = table.Column<int>(nullable: false),
-                    UserId1 = table.Column<string>(nullable: true)
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -199,8 +199,8 @@ namespace BugTrackerService.Migrations
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Tickets_Users_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Tickets_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -278,20 +278,14 @@ namespace BugTrackerService.Migrations
                 column: "ProductId1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_UserId1",
+                name: "IX_Tickets_UserId",
                 table: "Tickets",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
-                name: "EmailNormalizedIndex",
-                table: "Users",
-                column: "NormalizedEmail");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "Users",
-                unique: true,
-                column: "Email");
+                column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",

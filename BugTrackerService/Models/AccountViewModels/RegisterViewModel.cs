@@ -34,5 +34,7 @@ namespace BugTrackerService.Models.AccountViewModels
         [Phone]
         public String PhoneNumber { get; set; }
 
+        public bool Employee { get; set; }
+
     }
 }

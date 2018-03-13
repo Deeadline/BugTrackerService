@@ -9,7 +9,6 @@ namespace BugTrackerService.Data.Models
     public class Comment
     {
         [Key]
-        [Display(Name = "Number")]
         public int CommentID { get; set; }
         public int TicketID { get; set; }
         [Required]

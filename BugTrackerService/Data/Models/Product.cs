@@ -9,7 +9,6 @@ namespace BugTrackerService.Data.Models
     public class Product
     {
         [Key]
-        [Display(Name = "Number")]
         public int ProductId { get; set; }
         public string Name { get; set; }
     }

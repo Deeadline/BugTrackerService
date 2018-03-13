@@ -18,5 +18,9 @@ namespace BugTrackerService.Extensions
             var lastName = principal.Claims.FirstOrDefault(c => c.Type == "LastName");
             return lastName?.Value;
         }
+        public static int UserId(this ClaimsPrincipal principal)
+        {
+            return int.Parse(principal.FindFirst(ClaimTypes.Sid).Value);
+        }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BugTrackerService.Data;
 using BugTrackerService.Data.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugTrackerService.Controllers
 {
@@ -15,10 +16,12 @@ namespace BugTrackerService.Controllers
     public class TicketsController : Controller
     {
         private readonly BugTrackerServiceContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public TicketsController(BugTrackerServiceContext context)
+        public TicketsController(BugTrackerServiceContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Tickets
@@ -48,6 +51,10 @@ namespace BugTrackerService.Controllers
         // GET: Tickets/Create
         public IActionResult Create()
         {
+            List<Product> productList = new List<Product>();
+            productList = (from product in _context.Products select product).ToList();
+
+            ViewBag.ListofProduct = productList;
             return View();
         }
 
@@ -56,8 +63,14 @@ namespace BugTrackerService.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TicketId,UserId,EmployeeId,ProductId,Title,Description,Status,Priority,CreateDate,UpdateDate")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("TicketId,ProductId,Title,Description")] Ticket ticket)
         {
+            var user = await GetCurrentUserAsync();
+            ticket.CreateDate = DateTime.Now;
+            ticket.UpdateDate = DateTime.Now;
+            ticket.Priority = Priority.Medium;
+            ticket.OwnerId = user.Id;
+            ticket.User = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));
             if (ModelState.IsValid)
             {
                 _context.Add(ticket);
@@ -67,6 +80,7 @@ namespace BugTrackerService.Controllers
             return View(ticket);
         }
 
+        [Authorize(Roles = "Employee")]
         // GET: Tickets/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -86,9 +100,10 @@ namespace BugTrackerService.Controllers
         // POST: Tickets/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Employee")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TicketId,UserId,EmployeeId,ProductId,Title,Description,Status,Priority,CreateDate,UpdateDate")] Ticket ticket)
+        public async Task<IActionResult> Edit(int id, [Bind("TicketId,UserId,EmployeeId,ProductId,Title,Description,Status,Priority")] Ticket ticket)
         {
             if (id != ticket.TicketId)
             {
@@ -151,5 +166,6 @@ namespace BugTrackerService.Controllers
         {
             return _context.Tickets.Any(e => e.TicketId == id);
         }
+        private Task<User> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
     }
 }
