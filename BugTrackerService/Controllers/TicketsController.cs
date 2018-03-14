@@ -70,7 +70,7 @@ namespace BugTrackerService.Controllers
             ticket.UpdateDate = DateTime.Now;
             ticket.Priority = Priority.Medium;
             ticket.OwnerId = user.Id;
-            ticket.User = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));
+            ticket.Owner = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));
             if (ModelState.IsValid)
             {
                 _context.Add(ticket);

@@ -33,15 +33,13 @@ namespace BugTrackerService.Migrations
 
                     b.Property<int>("TicketID");
 
-                    b.Property<int>("UserId");
-
-                    b.Property<string>("UserId1");
+                    b.Property<string>("UserId");
 
                     b.HasKey("CommentID");
 
                     b.HasIndex("TicketID");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comments");
                 });
@@ -75,9 +73,7 @@ namespace BugTrackerService.Migrations
 
                     b.Property<int>("Priority");
 
-                    b.Property<string>("ProductId");
-
-                    b.Property<int?>("ProductId1");
+                    b.Property<int?>("ProductId");
 
                     b.Property<int>("Status");
 
@@ -87,13 +83,13 @@ namespace BugTrackerService.Migrations
 
                     b.Property<DateTime>("UpdateDate");
 
-                    b.Property<string>("UserId");
-
                     b.HasKey("TicketId");
 
-                    b.HasIndex("ProductId1");
+                    b.HasIndex("EmployeeId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Tickets");
                 });
@@ -282,18 +278,22 @@ namespace BugTrackerService.Migrations
 
                     b.HasOne("BugTrackerService.Data.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("BugTrackerService.Data.Models.Ticket", b =>
                 {
+                    b.HasOne("BugTrackerService.Data.Models.User", "Employee")
+                        .WithMany("EmployeeTickets")
+                        .HasForeignKey("EmployeeId");
+
+                    b.HasOne("BugTrackerService.Data.Models.User", "Owner")
+                        .WithMany("OwnerTickets")
+                        .HasForeignKey("OwnerId");
+
                     b.HasOne("BugTrackerService.Data.Models.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductId1");
-
-                    b.HasOne("BugTrackerService.Data.Models.User", "User")
-                        .WithMany("Tickets")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("ProductId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

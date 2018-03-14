@@ -44,19 +44,19 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayNameFor(modelItem => item.TicketId)
+                    @Html.DisplayFor(modelItem => item.TicketId)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.User)
+                    @Html.DisplayFor(modelItem => item.Owner.FullName)
                 </td>
                 <td>
-                    @Html.DisplayNameFor(modelItem => item.Priority)
+                    @Html.DisplayFor(modelItem => item.Priority)
                 </td>
                 <td>
-                    @Html.DisplayNameFor(modelItem => item.Status)
+                    @Html.DisplayFor(modelItem => item.Status)
                 </td>
                 <td>
-                    @Html.DisplayNameFor(modelItem => item.Product.Name)
+                    @Html.DisplayFor(modelItem => item.Product.Name)
                 </td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.TicketId">
@@ -67,7 +67,7 @@
                     @{
                         if (item.EmployeeId != null)
                         {
-                            @Html.DisplayNameFor(modelItem => item.EmployeeId)
+                            @Html.DisplayFor(modelItem => item.Employee.FullName)
                         }
                         else
                         {

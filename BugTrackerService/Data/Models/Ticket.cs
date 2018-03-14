@@ -15,12 +15,15 @@ namespace BugTrackerService.Data.Models
         private int _id;
 
         [Key]
+        [Display(Name="ID")]
         public int TicketId { get => _id; set => _id = value; }
         [Display(Name = "Created by")]
         public string OwnerId { get; set; }
+        [Display(Name = "Assigned to")]
         [DisplayFormat(NullDisplayText = "No one is assigned to this ticket")]
         public string EmployeeId { get; set; }
-        public string ProductId { get; set; }
+        [Display(Name = "Product")]
+        public int? ProductId { get; set; }
         [Required]
         [StringLength(60, MinimumLength = 6)]
         public string Title { get; set; }
@@ -35,7 +38,8 @@ namespace BugTrackerService.Data.Models
         [Display(Name = "Update Date")]
         [DataType(DataType.Date)]
         public DateTime UpdateDate { get => _updateDate; set => _updateDate = DateTime.Now; }
-        public User User { get; set; }
+        public User Owner { get; set; }
+        public User Employee { get; set; }
         public Product Product { get; set; }
         [Display(Name = "Comments")]
         [DisplayFormat(NullDisplayText = "No comments for this Ticket")]

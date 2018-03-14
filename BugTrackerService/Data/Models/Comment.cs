@@ -16,7 +16,7 @@ namespace BugTrackerService.Data.Models
 
         public string SendTime { get; set; }
         [Display(Name = "Author")]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         public User User { get; set; }
 

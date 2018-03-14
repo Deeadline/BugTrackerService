@@ -182,27 +182,31 @@ namespace BugTrackerService.Migrations
                     EmployeeId = table.Column<string>(nullable: true),
                     OwnerId = table.Column<string>(nullable: true),
                     Priority = table.Column<int>(nullable: false),
-                    ProductId = table.Column<string>(nullable: true),
-                    ProductId1 = table.Column<int>(nullable: true),
+                    ProductId = table.Column<int>(nullable: true),
                     Status = table.Column<int>(nullable: false),
                     Title = table.Column<string>(maxLength: 60, nullable: false),
-                    UpdateDate = table.Column<DateTime>(nullable: false),
-                    UserId = table.Column<string>(nullable: true)
+                    UpdateDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tickets", x => x.TicketId);
                     table.ForeignKey(
-                        name: "FK_Tickets_Products_ProductId1",
-                        column: x => x.ProductId1,
-                        principalTable: "Products",
-                        principalColumn: "ProductId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Tickets_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Tickets_Users_EmployeeId",
+                        column: x => x.EmployeeId,
                         principalTable: "Users",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Tickets_Users_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Tickets_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -215,8 +219,7 @@ namespace BugTrackerService.Migrations
                     Content = table.Column<string>(nullable: false),
                     SendTime = table.Column<string>(nullable: true),
                     TicketID = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false),
-                    UserId1 = table.Column<string>(nullable: true)
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -228,8 +231,8 @@ namespace BugTrackerService.Migrations
                         principalColumn: "TicketId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Comments_Users_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Comments_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -268,19 +271,24 @@ namespace BugTrackerService.Migrations
                 column: "TicketID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_UserId1",
+                name: "IX_Comments_UserId",
                 table: "Comments",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tickets_ProductId1",
-                table: "Tickets",
-                column: "ProductId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tickets_UserId",
-                table: "Tickets",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_EmployeeId",
+                table: "Tickets",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_OwnerId",
+                table: "Tickets",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_ProductId",
+                table: "Tickets",
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -322,10 +330,10 @@ namespace BugTrackerService.Migrations
                 name: "Tickets");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Products");
         }
     }
 }
