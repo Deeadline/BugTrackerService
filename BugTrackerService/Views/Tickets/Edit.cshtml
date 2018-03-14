@@ -20,14 +20,13 @@
             @if (User.IsInRole("Employee") || User.IsInRole("Admin"))
             {
                 <div class="form-check">
-                    @Html.CheckBoxFor(m => m.Assigned)
+                    @Html.CheckBoxFor(m => m.Assigned, new { @checked = "checked" })
                     @Html.LabelFor(m => m.Assigned, "Do you want assign?")
                 </div>
 
             }
             <div class="form-group">
                 <label asp-for="ProductId" class="control-label"></label>
-                <input asp-for="ProductId" class="form-control" />
                 <span asp-validation-for="ProductId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -41,13 +40,13 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
+                @Html.Label("Status")
+                @Html.DropDownList("Status", new SelectList(Enum.GetValues(typeof(Status))), new { @class = "form-control" })
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Priority" class="control-label"></label>
-                <input asp-for="Priority" class="form-control" />
+                @Html.Label("Priority")
+                @Html.DropDownList("Priority", new SelectList(Enum.GetValues(typeof(Priority))), new { @class = "form-control" })
                 <span asp-validation-for="Priority" class="text-danger"></span>
             </div>
             <div class="form-group">

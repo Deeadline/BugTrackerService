@@ -51,6 +51,8 @@ namespace BugTrackerService.Controllers
         // GET: Tickets/Create
         public IActionResult Create()
         {
+            var products = _context.Products.ToList();
+            ViewBag.ProductList = new SelectList(products, "Id", "Name");
             return View();
         }
 
@@ -59,9 +61,10 @@ namespace BugTrackerService.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TicketId,ProductId,Title,Description,ProductId")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("TicketId,ProductId,Title,Description")] Ticket ticket)
         {
             var user = await GetCurrentUserAsync();
+            ticket.Status = Status.Queue;
             ticket.CreateDate = DateTime.Now;
             ticket.UpdateDate = DateTime.Now;
             ticket.Priority = Priority.Medium;
@@ -69,7 +72,7 @@ namespace BugTrackerService.Controllers
             ticket.Owner = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));
             if (ModelState.IsValid)
             {
-                _context.Add(ticket);
+                _context.Tickets.Add(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -101,17 +104,17 @@ namespace BugTrackerService.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,Title,Description,Status,Priority")] Ticket ticket)
         {
-            var user = await GetCurrentUserAsync();
-            //TODO EDIT DONT GO .
+            /*var user = await GetCurrentUserAsync();
             ticket.UpdateDate = DateTime.Now;
             ticket.OwnerId = user.Id;
-            ticket.Owner = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));
+            ticket.Owner = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));*/
             if (id != ticket.TicketId)
             {
                 return NotFound();
             }
             if (ticket.Assigned)
             {
+                var user = await GetCurrentUserAsync();
                 ticket.EmployeeId = user.Id;
                 ticket.Employee = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.EmployeeId));
             }
@@ -120,7 +123,7 @@ namespace BugTrackerService.Controllers
             {
                 try
                 {
-                    _context.Update(ticket);
+                    _context.Tickets.Update(ticket);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

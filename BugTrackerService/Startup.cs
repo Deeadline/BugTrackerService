@@ -49,7 +49,7 @@ namespace BugTrackerService
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
+            Seed.CreateRoles(serviceProvider, Configuration).Wait();
             app.UseStaticFiles();
 
             app.UseAuthentication();

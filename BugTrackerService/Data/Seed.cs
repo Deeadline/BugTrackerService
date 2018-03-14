@@ -35,7 +35,6 @@ namespace BugTrackerService.Data
             {
                 var poweruser = new User
                 {
-                    Id = "0",
                     FirstName = "Mikołaj",
                     LastName = "Szymański",
                     Email = "admin@admin.com",
