@@ -27,7 +27,8 @@ namespace BugTrackerService.Controllers
         // GET: Tickets
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Tickets.ToListAsync());
+            var tickets = _context.Tickets.Include(c => c.Owner).Include(e => e.Employee);
+            return View(await tickets.ToListAsync());
         }
 
         // GET: Tickets/Details/5
@@ -38,8 +39,7 @@ namespace BugTrackerService.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets
-                .SingleOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e=>e.Employee).SingleOrDefaultAsync(m => m.TicketId == id);
             if (ticket == null)
             {
                 return NotFound();
@@ -51,10 +51,6 @@ namespace BugTrackerService.Controllers
         // GET: Tickets/Create
         public IActionResult Create()
         {
-            List<Product> productList = new List<Product>();
-            productList = (from product in _context.Products select product).ToList();
-
-            ViewBag.ListofProduct = productList;
             return View();
         }
 
@@ -63,7 +59,7 @@ namespace BugTrackerService.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TicketId,ProductId,Title,Description")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("TicketId,ProductId,Title,Description,ProductId")] Ticket ticket)
         {
             var user = await GetCurrentUserAsync();
             ticket.CreateDate = DateTime.Now;
@@ -80,7 +76,7 @@ namespace BugTrackerService.Controllers
             return View(ticket);
         }
 
-        [Authorize(Roles = "Employee")]
+        [Authorize(Roles = "Employee, Admin")]
         // GET: Tickets/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -89,7 +85,7 @@ namespace BugTrackerService.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.SingleOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _context.Tickets.Include(u=>u.Owner).Include(e => e.Employee).SingleOrDefaultAsync(m => m.TicketId == id);
             if (ticket == null)
             {
                 return NotFound();
@@ -100,14 +96,24 @@ namespace BugTrackerService.Controllers
         // POST: Tickets/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = "Employee")]
+        [Authorize(Roles = "Employee, Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TicketId,UserId,EmployeeId,ProductId,Title,Description,Status,Priority")] Ticket ticket)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Title,Description,Status,Priority")] Ticket ticket)
         {
+            var user = await GetCurrentUserAsync();
+            //TODO EDIT DONT GO .
+            ticket.UpdateDate = DateTime.Now;
+            ticket.OwnerId = user.Id;
+            ticket.Owner = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));
             if (id != ticket.TicketId)
             {
                 return NotFound();
+            }
+            if (ticket.Assigned)
+            {
+                ticket.EmployeeId = user.Id;
+                ticket.Employee = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.EmployeeId));
             }
 
             if (ModelState.IsValid)
@@ -134,6 +140,7 @@ namespace BugTrackerService.Controllers
         }
 
         // GET: Tickets/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -152,6 +159,7 @@ namespace BugTrackerService.Controllers
         }
 
         // POST: Tickets/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

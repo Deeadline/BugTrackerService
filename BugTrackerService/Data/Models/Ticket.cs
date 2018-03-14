@@ -44,6 +44,8 @@ namespace BugTrackerService.Data.Models
         [Display(Name = "Comments")]
         [DisplayFormat(NullDisplayText = "No comments for this Ticket")]
         public ICollection<Comment> Comments { get; set; }
+
+        public bool Assigned { get; set; }
     }
     public enum Status
     {

@@ -78,7 +78,13 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.UpdateDate)
                 </td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        <a asp-action="Delete" asp-route-id="@item.TicketId">Delete</a>
+                    </td>
 
+                }
             </tr>
         }
     </tbody>

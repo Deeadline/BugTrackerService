@@ -12,9 +12,10 @@ using System;
 namespace BugTrackerService.Migrations
 {
     [DbContext(typeof(BugTrackerServiceContext))]
-    partial class BugTrackerServiceContextModelSnapshot : ModelSnapshot
+    [Migration("20180314125802_DBRoleInit")]
+    partial class DBRoleInit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

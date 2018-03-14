@@ -29,5 +29,8 @@ namespace BugTrackerService.Data
             modelBuilder.Entity<Ticket>().HasOne(u => u.Owner).WithMany(u => u.OwnerTickets);
             modelBuilder.Entity<Ticket>().HasOne(u => u.Employee).WithMany(u => u.EmployeeTickets);
         }
+
+
+        public DbSet<BugTrackerService.Data.Models.User> User { get; set; }
     }
 }

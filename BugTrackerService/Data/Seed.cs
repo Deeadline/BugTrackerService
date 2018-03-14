@@ -30,21 +30,22 @@ namespace BugTrackerService.Data
 
             }
             // creating a super user who could maintain the web app
-
-            var poweruser = new User
+            var _user = await UserManager.FindByEmailAsync("admin@email.com");
+            if (_user == null)
             {
-                FirstName = "Mikołaj",
-                LastName = "Szymański",
-                Email = "admin@admin.com",
-                UserName = "admin@admin.com",
-                CompanyName = "Administracja",
-                PhoneNumber = "00-00"
-            };
+                var poweruser = new User
+                {
+                    Id = "0",
+                    FirstName = "Mikołaj",
+                    LastName = "Szymański",
+                    Email = "admin@admin.com",
+                    UserName = "admin@admin.com",
+                    CompanyName = "Administracja",
+                    PhoneNumber = "00-00",
+                    WorkerCardNumber = "0"
+                };
 
-            string userPassword = "@dm!n!str@t0r";
-            var user = await UserManager.FindByEmailAsync(poweruser.Email);
-            if (user == null)
-            {
+                string userPassword = "@dm!n!str@t0r";
                 var createPowerUser = await UserManager.CreateAsync(poweruser, userPassword);
                 if (createPowerUser.Succeeded)
                 {

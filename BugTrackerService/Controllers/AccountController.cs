@@ -231,6 +231,10 @@ namespace BugTrackerService.Controllers
                     {
                         await _userManager.AddToRoleAsync(user, "Employee");
                     }
+                    else if(model.Email.Equals("admin@admin.admin"))
+                    {
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                    }
                     else
                     {
                         await _userManager.AddToRoleAsync(user, "User");
