@@ -102,33 +102,36 @@ namespace BugTrackerService.Controllers
         [Authorize(Roles = "Employee, Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Title,Description,Status,Priority")] Ticket ticket)
+        public async Task<IActionResult> Edit(int id, [Bind("TicketId,ProductId,Title,Description,Status,Priority,Assigned")] Ticket ticket)
         {
-            /*var user = await GetCurrentUserAsync();
-            ticket.UpdateDate = DateTime.Now;
-            ticket.OwnerId = user.Id;
-            ticket.Owner = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));*/
+            //ticket.UpdateDate = DateTime.Now;
             if (id != ticket.TicketId)
             {
                 return NotFound();
             }
+            var oldTicket = await _context.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticket.TicketId);
+            oldTicket.Title = ticket.Title;
+            oldTicket.Description = ticket.Description;
+            oldTicket.Priority = ticket.Priority;
+            oldTicket.Status = ticket.Status;
+            oldTicket.UpdateDate = DateTime.Now;
             if (ticket.Assigned)
             {
                 var user = await GetCurrentUserAsync();
-                ticket.EmployeeId = user.Id;
-                ticket.Employee = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.EmployeeId));
+                oldTicket.EmployeeId = user.Id;
+                oldTicket.Employee = await _context.Users.SingleAsync(u => u.Id.Equals(oldTicket.EmployeeId));
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Tickets.Update(ticket);
+                    _context.Update(oldTicket);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TicketExists(ticket.TicketId))
+                    if (!TicketExists(oldTicket.TicketId))
                     {
                         return NotFound();
                     }
@@ -139,7 +142,7 @@ namespace BugTrackerService.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(ticket);
+            return View(oldTicket);
         }
 
         // GET: Tickets/Delete/5
@@ -152,7 +155,7 @@ namespace BugTrackerService.Controllers
             }
 
             var ticket = await _context.Tickets
-                .SingleOrDefaultAsync(m => m.TicketId == id);
+                .Include(u => u.Owner).Include(e => e.Employee).SingleOrDefaultAsync(m => m.TicketId == id);
             if (ticket == null)
             {
                 return NotFound();

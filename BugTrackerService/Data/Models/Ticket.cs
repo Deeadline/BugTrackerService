@@ -43,9 +43,11 @@ namespace BugTrackerService.Data.Models
 
         [Display(Name = "Create Date")]
         [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:f}")]
         public DateTime CreateDate { get => _createDate; set => _createDate = DateTime.Now; }
 
         [Display(Name = "Update Date")]
+        [DisplayFormat(ApplyFormatInEditMode =true,DataFormatString = "{0:f}")]
         [DataType(DataType.Date)]
         public DateTime UpdateDate { get => _updateDate; set => _updateDate = DateTime.Now; }
 

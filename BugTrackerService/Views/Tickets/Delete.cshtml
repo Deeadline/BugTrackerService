@@ -15,19 +15,19 @@
             @Html.DisplayNameFor(model => model.OwnerId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.OwnerId)
+            @Html.DisplayFor(model => model.Owner.FullName)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.EmployeeId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.EmployeeId)
+            @Html.DisplayFor(model => model.Employee.FullName)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.ProductId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.ProductId)
+            @Html.DisplayFor(model => model.Product.Name)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Title)
