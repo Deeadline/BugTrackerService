@@ -1,4 +1,4 @@
-﻿@model BugTrackerService.Data.Models.Ticket
+﻿@model BugTrackerService.Models.TicketViewModels.TicketViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -13,17 +13,20 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" placeholder="Enter the title" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                <label asp-for="Ticket.Title" class="control-label"></label>
+                <input asp-for="Ticket.Title" class="form-control" placeholder="Enter the title" />
+                <span asp-validation-for="Ticket.Title" class="text-danger"></span>
             </div>
             <div class="form-group">
+                @Html.Label("Product")
+                @Html.DropDownListFor(m => m.ProductId, Model.Products, new { id = "productTable" })
+                <span asp-validation-for="Ticket.Product" class="text-danger"></span>
             </div>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <label asp-for="Description" class="control-label"></label>
-                    <textarea asp-for="Description" class="form-control" placeholder="Describe your problem!"></textarea>
-                    <span asp-validation-for="Description" class="text-danger"></span>
+                    <label asp-for="Ticket.Description" class="control-label"></label>
+                    <textarea asp-for="Ticket.Description" class="form-control" placeholder="Describe your problem!"></textarea>
+                    <span asp-validation-for="Ticket.Description" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">

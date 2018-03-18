@@ -9,6 +9,7 @@ using BugTrackerService.Data;
 using BugTrackerService.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using BugTrackerService.Models.TicketViewModels;
 
 namespace BugTrackerService.Controllers
 {
@@ -27,7 +28,7 @@ namespace BugTrackerService.Controllers
         // GET: Tickets
         public async Task<IActionResult> Index()
         {
-            var tickets = _context.Tickets.Include(c => c.Owner).Include(e => e.Employee);
+            var tickets = _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product);
             return View(await tickets.ToListAsync());
         }
 
@@ -39,7 +40,7 @@ namespace BugTrackerService.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e=>e.Employee).SingleOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e=>e.Employee).Include(p=>p.Product).SingleOrDefaultAsync(m => m.TicketId == id);
             if (ticket == null)
             {
                 return NotFound();
@@ -51,9 +52,13 @@ namespace BugTrackerService.Controllers
         // GET: Tickets/Create
         public IActionResult Create()
         {
-            var products = _context.Products.ToList();
-            ViewBag.ProductList = new SelectList(products, "Id", "Name");
-            return View();
+           Product[] products = _context.Products.ToArray();
+            TicketViewModel model = new TicketViewModel()
+            {
+                Ticket = new Ticket(),
+                Products = products.Select(x => new SelectListItem { Value = x.ProductId.ToString(), Text = x.Name })
+            };
+            return View(model);
         }
 
         // POST: Tickets/Create
@@ -61,9 +66,12 @@ namespace BugTrackerService.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TicketId,ProductId,Title,Description")] Ticket ticket)
+        public async Task<IActionResult> Create(TicketViewModel ticketModel)
         {
             var user = await GetCurrentUserAsync();
+            var ticket = ticketModel.Ticket;
+            ticket.ProductId = ticketModel.ProductId;
+            ticket.Product = await _context.Products.SingleAsync(p => p.ProductId.Equals(ticket.ProductId));
             ticket.Status = Status.Queue;
             ticket.CreateDate = DateTime.Now;
             ticket.UpdateDate = DateTime.Now;
@@ -76,7 +84,7 @@ namespace BugTrackerService.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(ticket);
+            return View(ticketModel);
         }
 
         [Authorize(Roles = "Employee, Admin")]
@@ -88,12 +96,14 @@ namespace BugTrackerService.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(u=>u.Owner).Include(e => e.Employee).SingleOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _context.Tickets.Include(u=>u.Owner).Include(e => e.Employee).Include(m => m.Product).SingleOrDefaultAsync(m => m.TicketId == id);
+            Product[] products = _context.Products.ToArray();
+            var model = new TicketViewModel() { Ticket = ticket, Products = products.Select(x => new SelectListItem { Value = x.ProductId.ToString(), Text = x.Name, Selected = true })};
             if (ticket == null)
             {
                 return NotFound();
             }
-            return View(ticket);
+            return View(model);
         }
 
         // POST: Tickets/Edit/5
@@ -102,20 +112,21 @@ namespace BugTrackerService.Controllers
         [Authorize(Roles = "Employee, Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TicketId,ProductId,Title,Description,Status,Priority,Assigned")] Ticket ticket)
+        public async Task<IActionResult> Edit(int id, TicketViewModel ticketModel)
         {
+            var ticket = ticketModel.Ticket;
             //ticket.UpdateDate = DateTime.Now;
             if (id != ticket.TicketId)
             {
                 return NotFound();
             }
-            var oldTicket = await _context.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticket.TicketId);
-            oldTicket.Title = ticket.Title;
-            oldTicket.Description = ticket.Description;
-            oldTicket.Priority = ticket.Priority;
-            oldTicket.Status = ticket.Status;
+            var oldTicket = await _context.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticketModel.Ticket.TicketId);
+            oldTicket.Title = ticketModel.Ticket.Title;
+            oldTicket.Description = ticketModel.Ticket.Description;
+            oldTicket.Priority = ticketModel.Ticket.Priority;
+            oldTicket.Status = ticketModel.Ticket.Status;
             oldTicket.UpdateDate = DateTime.Now;
-            if (ticket.Assigned)
+            if (ticketModel.Ticket.Assigned)
             {
                 var user = await GetCurrentUserAsync();
                 oldTicket.EmployeeId = user.Id;
@@ -142,7 +153,7 @@ namespace BugTrackerService.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(oldTicket);
+            return View(ticketModel);
         }
 
         // GET: Tickets/Delete/5
@@ -155,7 +166,7 @@ namespace BugTrackerService.Controllers
             }
 
             var ticket = await _context.Tickets
-                .Include(u => u.Owner).Include(e => e.Employee).SingleOrDefaultAsync(m => m.TicketId == id);
+                .Include(u => u.Owner).Include(e => e.Employee).Include(p => p.Product).SingleOrDefaultAsync(m => m.TicketId == id);
             if (ticket == null)
             {
                 return NotFound();
