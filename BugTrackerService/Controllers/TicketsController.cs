@@ -15,10 +15,10 @@ namespace BugTrackerService.Controllers
     [Authorize]
     public class TicketsController : Controller
     {
-        private readonly BugTrackerServiceContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
 
-        public TicketsController(BugTrackerServiceContext context, UserManager<User> userManager)
+        public TicketsController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;

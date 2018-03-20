@@ -11,9 +11,9 @@ namespace BugTrackerService.Controllers
     [Authorize(Roles = "Admin")]
     public class ProductsController : Controller
     {
-        private readonly BugTrackerServiceContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public ProductsController(BugTrackerServiceContext context)
+        public ProductsController(ApplicationDbContext context)
         {
             _context = context;
         }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTrackerService", "BugTrackerService\BugTrackerService.csproj", "{DE62F71B-9A9F-4A9C-9FED-719BDF077C46}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTrackerService", "BugTrackerService\BugTrackerService.csproj", "{0C64FFEF-B91D-4CF0-A1D3-5B97D3DF43E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DE62F71B-9A9F-4A9C-9FED-719BDF077C46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE62F71B-9A9F-4A9C-9FED-719BDF077C46}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE62F71B-9A9F-4A9C-9FED-719BDF077C46}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE62F71B-9A9F-4A9C-9FED-719BDF077C46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C64FFEF-B91D-4CF0-A1D3-5B97D3DF43E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C64FFEF-B91D-4CF0-A1D3-5B97D3DF43E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C64FFEF-B91D-4CF0-A1D3-5B97D3DF43E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C64FFEF-B91D-4CF0-A1D3-5B97D3DF43E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8FCD7529-66C5-4FC0-BB9F-8DAA028F0CC6}
+		SolutionGuid = {C1ABBE24-6B5A-4D66-BBD9-102FEFD94ACB}
 	EndGlobalSection
 EndGlobal

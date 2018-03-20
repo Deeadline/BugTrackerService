@@ -11,9 +11,9 @@ namespace BugTrackerService.Controllers
     [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
-        private readonly BugTrackerServiceContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public UsersController(BugTrackerServiceContext context)
+        public UsersController(ApplicationDbContext context)
         {
             _context = context;
         }

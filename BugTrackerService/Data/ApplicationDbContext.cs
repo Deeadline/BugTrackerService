@@ -1,23 +1,25 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using BugTrackerService.Models;
 using BugTrackerService.Data.Models;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace BugTrackerService.Data
 {
-    public class BugTrackerServiceContext : IdentityDbContext<User>
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
-        public BugTrackerServiceContext()
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
         {
         }
-
-        public BugTrackerServiceContext(DbContextOptions<BugTrackerServiceContext> options) : base(options) { }
-
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Product> Products { get; set; }
-
-
+        public DbSet<User> User { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -29,8 +31,5 @@ namespace BugTrackerService.Data
             modelBuilder.Entity<Ticket>().HasOne(u => u.Owner).WithMany(u => u.OwnerTickets);
             modelBuilder.Entity<Ticket>().HasOne(u => u.Employee).WithMany(u => u.EmployeeTickets);
         }
-
-
-        public DbSet<BugTrackerService.Data.Models.User> User { get; set; }
     }
 }

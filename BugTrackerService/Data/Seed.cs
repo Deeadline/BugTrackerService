@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BugTrackerService.Data
@@ -28,7 +30,7 @@ namespace BugTrackerService.Data
 
             }
             // creating a super user who could maintain the web app
-            var _user = await UserManager.FindByEmailAsync("admin@email.com");
+            var _user = await UserManager.FindByEmailAsync("admin@admin.admin");
             if (_user == null)
             {
                 var poweruser = new User

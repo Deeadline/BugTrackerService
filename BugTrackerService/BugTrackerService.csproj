@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <UserSecretsId>aspnet-BugTrackerService-B3597578-F6F3-45BB-B37E-FC1BDE1EF5B7</UserSecretsId>
+    <UserSecretsId>aspnet-BugTrackerService-F9B4CA00-B59C-41D9-81BB-C9418BB55E83</UserSecretsId>
   </PropertyGroup>
 
 
@@ -16,6 +16,43 @@
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Account\AccessDenied.cshtml" />
+    <None Include="Views\Account\ConfirmEmail.cshtml" />
+    <None Include="Views\Account\ExternalLogin.cshtml" />
+    <None Include="Views\Account\ForgotPassword.cshtml" />
+    <None Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <None Include="Views\Account\Lockout.cshtml" />
+    <None Include="Views\Account\Login.cshtml" />
+    <None Include="Views\Account\LoginWith2fa.cshtml" />
+    <None Include="Views\Account\LoginWithRecoveryCode.cshtml" />
+    <None Include="Views\Account\Register.cshtml" />
+    <None Include="Views\Account\ResetPassword.cshtml" />
+    <None Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <None Include="Views\Account\SignedOut.cshtml" />
+    <None Include="Views\Home\About.cshtml" />
+    <None Include="Views\Home\Contact.cshtml" />
+    <None Include="Views\Home\Index.cshtml" />
+    <None Include="Views\Manage\ChangePassword.cshtml" />
+    <None Include="Views\Manage\Disable2fa.cshtml" />
+    <None Include="Views\Manage\EnableAuthenticator.cshtml" />
+    <None Include="Views\Manage\ExternalLogins.cshtml" />
+    <None Include="Views\Manage\GenerateRecoveryCodes.cshtml" />
+    <None Include="Views\Manage\Index.cshtml" />
+    <None Include="Views\Manage\ResetAuthenticator.cshtml" />
+    <None Include="Views\Manage\SetPassword.cshtml" />
+    <None Include="Views\Manage\ShowRecoveryCodes.cshtml" />
+    <None Include="Views\Manage\TwoFactorAuthentication.cshtml" />
+    <None Include="Views\Manage\_Layout.cshtml" />
+    <None Include="Views\Manage\_ManageNav.cshtml" />
+    <None Include="Views\Manage\_StatusMessage.cshtml" />
+    <None Include="Views\Manage\_ViewImports.cshtml" />
+    <None Include="Views\Shared\Error.cshtml" />
+    <None Include="Views\Shared\_Layout.cshtml" />
+    <None Include="Views\Shared\_LoginPartial.cshtml" />
+    <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
   </ItemGroup>
 
 </Project>

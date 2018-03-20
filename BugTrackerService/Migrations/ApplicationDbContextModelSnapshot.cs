@@ -11,11 +11,10 @@ using System;
 
 namespace BugTrackerService.Migrations
 {
-    [DbContext(typeof(BugTrackerServiceContext))]
-    [Migration("20180314110658_DBInitialize")]
-    partial class DBInitialize
+    [DbContext(typeof(ApplicationDbContext))]
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,6 +60,8 @@ namespace BugTrackerService.Migrations
                 {
                     b.Property<int>("TicketId")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("Assigned");
 
                     b.Property<DateTime>("CreateDate");
 

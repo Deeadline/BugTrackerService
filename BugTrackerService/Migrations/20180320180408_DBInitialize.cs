@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using System;
+using System.Collections.Generic;
 
 namespace BugTrackerService.Migrations
 {
@@ -176,6 +177,7 @@ namespace BugTrackerService.Migrations
                 {
                     TicketId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Assigned = table.Column<bool>(nullable: false),
                     CreateDate = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(maxLength: 60, nullable: false),
                     EmployeeId = table.Column<string>(nullable: true),
