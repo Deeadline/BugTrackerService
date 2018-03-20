@@ -9,7 +9,6 @@ using BugTrackerService.Models.AccountViewModels;
 using BugTrackerService.Services;
 using BugTrackerService.Data.Models;
 using BugTrackerService.Data;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace BugTrackerService.Controllers
