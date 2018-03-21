@@ -71,6 +71,8 @@ namespace BugTrackerService.Migrations
 
                     b.Property<string>("EmployeeId");
 
+                    b.Property<byte[]>("File");
+
                     b.Property<string>("OwnerId");
 
                     b.Property<int>("Priority");

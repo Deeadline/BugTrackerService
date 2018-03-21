@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -53,6 +54,7 @@ namespace BugTrackerService.Data.Models
         public ICollection<Comment> Comments { get; set; }
 
         public bool Assigned { get; set; }
+        public byte[] File { get; set; }
     }
     public enum Status
     {

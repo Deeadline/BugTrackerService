@@ -12,7 +12,7 @@ using System;
 namespace BugTrackerService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180320180408_DBInitialize")]
+    [Migration("20180320232157_DBInitialize")]
     partial class DBInitialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,6 +71,8 @@ namespace BugTrackerService.Migrations
                         .HasMaxLength(60);
 
                     b.Property<string>("EmployeeId");
+
+                    b.Property<byte[]>("File");
 
                     b.Property<string>("OwnerId");
 

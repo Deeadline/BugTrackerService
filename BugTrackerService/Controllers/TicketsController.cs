@@ -9,6 +9,7 @@ using BugTrackerService.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using BugTrackerService.Models.TicketViewModels;
+using System.IO;
 
 namespace BugTrackerService.Controllers
 {
@@ -24,11 +25,68 @@ namespace BugTrackerService.Controllers
             _userManager = userManager;
         }
 
-        // GET: Tickets
-        public async Task<IActionResult> Index()
+        //// GET: Tickets
+        //public async Task<IActionResult> Index()
+        //{
+        //    var tickets = _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product);
+        //    return View(await tickets.ToListAsync());
+        //}
+
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            var tickets = _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product);
-            return View(await tickets.ToListAsync());
+            ViewData["OwnerSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["PrioritySortParm"] = sortOrder == "Priority" ? "prio_desc" : "Priority";
+            ViewData["StatusSortParm"] = sortOrder == "Status" ? "stat_desc" : "Status";
+            ViewData["ProductSortParm"] = sortOrder == "Product" ? "prod_desc" : "Product";
+            ViewData["AssignedSortParm"] = sortOrder == "Assigned" ? "ass_desc" : "Assigned";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewData["CurrentFilter"] = searchString;
+            var tickets = from s in _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product)
+                          select s;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                tickets = tickets.Where(d => d.Description.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    tickets = tickets.OrderByDescending(nd => nd.Owner.LastName);
+                    break;
+                case "Date":
+                    tickets = tickets.OrderBy(d => d.UpdateDate);
+                    break;
+                case "date_desc":
+                    tickets = tickets.OrderByDescending(dd => dd.UpdateDate);
+                    break;
+                case "prio_desc":
+                    tickets = tickets.OrderByDescending(pd => pd.Priority);
+                    break;
+                case "stat_desc":
+                    tickets = tickets.OrderByDescending(sd => sd.Status);
+                    break;
+                case "prod_desc":
+                    tickets = tickets.OrderByDescending(prd => prd.Product);
+                    break;
+                case "ass_desc":
+                    tickets = tickets.OrderByDescending(assd => assd.Employee);
+                    break;
+                case "Priority":
+                    tickets = tickets.OrderBy(p => p.Priority);
+                    break;
+                case "Assigned":
+                    tickets = tickets.OrderBy(ass => ass.Employee);
+                    break;
+                case "Product":
+                    tickets = tickets.OrderBy(pr => pr.Product);
+                    break;
+                case "Status":
+                    tickets = tickets.OrderBy(st => st.Status);
+                    break;
+                default:
+                    tickets = tickets.OrderBy(s => s.UpdateDate);
+                    break;
+            }
+            return View(await tickets.AsNoTracking().ToListAsync());
         }
 
         // GET: Tickets/Details/5

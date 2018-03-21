@@ -9,6 +9,14 @@
 <p>
     <a asp-action="Create" class="btn btn-default">Create new report!</a>
 </p>
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>Before create new report, find a key-word in description: </p>
+        <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+        <input type="submit" value="Search" class="btn btn-default" /> |
+        <a asp-action="Index">Back to Full List</a>
+    </div>
+</form>
 <table class="table">
     <thead>
         <tr>
@@ -16,25 +24,25 @@
                 @Html.DisplayNameFor(model => model.TicketId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OwnerId)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["OwnerSortParm"]">@Html.DisplayNameFor(model => model.OwnerId)</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Priority)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["PrioritySortParm"]">@Html.DisplayNameFor(model => model.Priority)</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParm"]">@Html.DisplayNameFor(model => model.Status)</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ProductId)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["ProductSortParm"]">@Html.DisplayNameFor(model => model.ProductId)</a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EmployeeId)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["AssignedSortParm"]">@Html.DisplayNameFor(model => model.EmployeeId)</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UpdateDate)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]">@Html.DisplayNameFor(model => model.UpdateDate)</a>
             </th>
             <th></th>
         </tr>

@@ -248,8 +248,8 @@ namespace BugTrackerService.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation("User created a new account with password.");
 
-                    await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("FirstName", user.FirstName));
-                    await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("LastName", user.LastName));
+                    await _userManager.AddClaimAsync(user, new Claim("FirstName", user.FirstName));
+                    await _userManager.AddClaimAsync(user, new Claim("LastName", user.LastName));
 
                     return RedirectToLocal(returnUrl);
                 }

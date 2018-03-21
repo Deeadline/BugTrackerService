@@ -181,6 +181,7 @@ namespace BugTrackerService.Migrations
                     CreateDate = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(maxLength: 60, nullable: false),
                     EmployeeId = table.Column<string>(nullable: true),
+                    File = table.Column<byte[]>(nullable: true),
                     OwnerId = table.Column<string>(nullable: true),
                     Priority = table.Column<int>(nullable: false),
                     ProductId = table.Column<int>(nullable: true),
