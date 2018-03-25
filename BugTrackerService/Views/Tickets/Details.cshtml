@@ -1,4 +1,4 @@
-﻿@model BugTrackerService.Data.Models.Ticket
+﻿@model BugTrackerService.Models.TicketViewModels.TicketCommentViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -11,68 +11,83 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.TicketId)
+            @Html.DisplayNameFor(model => model.Ticket.TicketId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.TicketId)
+            @Html.DisplayFor(model => model.Ticket.TicketId)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.OwnerId)
+            @Html.DisplayNameFor(model => model.Ticket.OwnerId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Owner.FullName)
+            @Html.DisplayFor(model => model.Ticket.Owner.FullName)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.EmployeeId)
+            @Html.DisplayNameFor(model => model.Ticket.EmployeeId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Employee.FullName)
+            @Html.DisplayFor(model => model.Ticket.Employee.FullName)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.ProductId)
+            @Html.DisplayNameFor(model => model.Ticket.ProductId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Product.Name)
+            @Html.DisplayFor(model => model.Ticket.Product.Name)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Title)
+            @Html.DisplayNameFor(model => model.Ticket.Title)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Title)
+            @Html.DisplayFor(model => model.Ticket.Title)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.Ticket.Description)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Description)
+            @Html.DisplayFor(model => model.Ticket.Description)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Status)
+            @Html.DisplayNameFor(model => model.Ticket.Status)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Status)
+            @Html.DisplayFor(model => model.Ticket.Status)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Priority)
+            @Html.DisplayNameFor(model => model.Ticket.Priority)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Priority)
+            @Html.DisplayFor(model => model.Ticket.Priority)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.CreateDate)
+            @Html.DisplayNameFor(model => model.Ticket.CreateDate)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.CreateDate)
+            @Html.DisplayFor(model => model.Ticket.CreateDate)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.UpdateDate)
+            @Html.DisplayNameFor(model => model.Ticket.UpdateDate)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.UpdateDate)
+            @Html.DisplayFor(model => model.Ticket.UpdateDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Ticket.Comments)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Ticket.Comments)
         </dd>
     </dl>
 </div>
+<div class="form-group">
+    <form asp-controller="Tickets" asp-action="Details" asp-route-id="@Model.Ticket.TicketId" method="post">
+        <label asp-for="Comment" class="control-label"></label>
+        <textarea asp-for="Comment.Content" class="form-control" placeholder="Add comment!"></textarea>
+        <span asp-validation-for="Comment.Content" class="text-danger"></span>
+        <input type="submit" value="Add comment" class="btn btn-default" />
+    </form>
+</div>
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.TicketId">Edit</a> |
+    @await Html.PartialAsync("_EditRun")
     <a asp-action="Index">Back to List</a>
 </div>

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace BugTrackerService.Models.TicketViewModels
 {
-    public class TicketViewModel
+    public class TicketCreateEditViewModel
     {
         public Ticket Ticket { get; set; }
         public IFormFile File { get; set; }

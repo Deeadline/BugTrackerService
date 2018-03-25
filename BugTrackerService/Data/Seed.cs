@@ -16,7 +16,7 @@ namespace BugTrackerService.Data
             //adding customs roles
             var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var UserManager = serviceProvider.GetRequiredService<UserManager<User>>();
-            string[] roleNames = { "Admin", "Employee", "User" };
+            string[] roleNames = { "Admin", "Employee", "User", "Owner", "Assigned" };
             IdentityResult roleResult;
 
             foreach (var roleName in roleNames)

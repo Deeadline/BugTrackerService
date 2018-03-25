@@ -1,4 +1,4 @@
-﻿@model BugTrackerService.Models.TicketViewModels.TicketViewModel
+﻿@model BugTrackerService.Models.TicketViewModels.TicketCreateEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -17,17 +17,10 @@
                 <label asp-for="Ticket.OwnerId" class="control-label"></label>
                 @Html.DisplayFor(u => u.Ticket.Owner.FullName)
             </div>
-            @if (User.IsInRole("Employee") || User.IsInRole("Admin"))
-            {
-                <div class="form-check">
-                    @Html.CheckBoxFor(m => m.Ticket.Assigned, new { @checked = "checked" })
-                    @Html.LabelFor(m => m.Ticket.Assigned, "Do you want assign?")
-                </div>
-
-            }
+            @await Html.PartialAsync("_AssignedPartial")
             <div class="form-group">
                 <label asp-for="Ticket.Product" class="control-label"></label>
-                <select asp-for="Ticket.ProductId" asp-items="Model.Products"  class="form-control"></select>
+                <select asp-for="Ticket.ProductId" asp-items="Model.Products" class="form-control"></select>
                 <span asp-validation-for="Ticket.Product" class="text-danger"></span>
             </div>
             <div class="form-group">

@@ -98,19 +98,43 @@ namespace BugTrackerService.Controllers
             }
 
             var ticket = await _context.Tickets.Include(c => c.Owner).Include(e=>e.Employee).Include(p=>p.Product).SingleOrDefaultAsync(m => m.TicketId == id);
+            var model = new TicketCommentViewModel() { Ticket = ticket, Comment = new Comment() };
             if (ticket == null)
             {
                 return NotFound();
             }
 
-            return View(ticket);
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Details(int? id, TicketCommentViewModel model)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var ticket = await _context.Tickets.SingleOrDefaultAsync(u => u.TicketId == id);
+            var user = await GetCurrentUserAsync();
+            if(ticket == null)
+            {
+                return NotFound();
+            }
+            model.Comment.SendTime = DateTime.Now;
+            model.Comment.TicketID = ticket.TicketId;
+            model.Comment.Ticket = ticket;
+            model.Comment.UserId = user.Id;
+            model.Comment.User = user;
+            _context.Comments.Add(model.Comment);
+            ticket.Comments = await _context.Comments.ToListAsync();
+            return View(model);
         }
 
         // GET: Tickets/Create
         public IActionResult Create()
         {
            Product[] products = _context.Products.ToArray();
-            TicketViewModel model = new TicketViewModel()
+            TicketCreateEditViewModel model = new TicketCreateEditViewModel()
             {
                 Ticket = new Ticket(),
                 Products = products.Select(x => new SelectListItem { Value = x.ProductId.ToString(), Text = x.Name })
@@ -123,7 +147,7 @@ namespace BugTrackerService.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TicketViewModel ticketModel)
+        public async Task<IActionResult> Create(TicketCreateEditViewModel ticketModel)
         {
             var user = await GetCurrentUserAsync();
             var ticket = ticketModel.Ticket;
@@ -135,6 +159,7 @@ namespace BugTrackerService.Controllers
             ticket.Priority = Priority.Medium;
             ticket.OwnerId = user.Id;
             ticket.Owner = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));
+            await _userManager.AddToRoleAsync(user, "Owner");
             if (ModelState.IsValid)
             {
                 _context.Tickets.Add(ticket);
@@ -144,7 +169,7 @@ namespace BugTrackerService.Controllers
             return View(ticketModel);
         }
 
-        [Authorize(Roles = "Employee, Admin")]
+        [Authorize(Policy = "RequireOwnerOrHigher")]
         // GET: Tickets/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -153,9 +178,9 @@ namespace BugTrackerService.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(u=>u.Owner).Include(e => e.Employee).Include(m => m.Product).SingleOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _context.Tickets.Include(u => u.Owner).Include(e => e.Employee).Include(m => m.Product).SingleOrDefaultAsync(m => m.TicketId == id);
             Product[] products = _context.Products.ToArray();
-            var model = new TicketViewModel() { Ticket = ticket, Products = products.Select(x => new SelectListItem { Value = x.ProductId.ToString(), Text = x.Name, Selected = true })};
+            var model = new TicketCreateEditViewModel() { Ticket = ticket, Products = products.Select(x => new SelectListItem { Value = x.ProductId.ToString(), Text = x.Name, Selected = true }) };
             if (ticket == null)
             {
                 return NotFound();
@@ -166,28 +191,34 @@ namespace BugTrackerService.Controllers
         // POST: Tickets/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = "Employee, Admin")]
+        [Authorize(Policy = "RequireOwnerOrHigher")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, TicketViewModel ticketModel)
+        public async Task<IActionResult> Edit(int id, TicketCreateEditViewModel ticketModel)
         {
             var ticket = ticketModel.Ticket;
-            //ticket.UpdateDate = DateTime.Now;
             if (id != ticket.TicketId)
             {
                 return NotFound();
             }
-            var oldTicket = await _context.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticketModel.Ticket.TicketId);
-            oldTicket.Title = ticketModel.Ticket.Title;
-            oldTicket.Description = ticketModel.Ticket.Description;
-            oldTicket.Priority = ticketModel.Ticket.Priority;
-            oldTicket.Status = ticketModel.Ticket.Status;
+            var oldTicket = await _context.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticket.TicketId);
+            oldTicket.Title = ticket.Title;
+            oldTicket.Description = ticket.Description;
+            oldTicket.Priority = ticket.Priority;
+            oldTicket.Status = ticket.Status;
             oldTicket.UpdateDate = DateTime.Now;
-            if (ticketModel.Ticket.Assigned)
+            oldTicket.Assigned = ticket.Assigned;
+            if (ticket.Assigned)
             {
                 var user = await GetCurrentUserAsync();
                 oldTicket.EmployeeId = user.Id;
                 oldTicket.Employee = await _context.Users.SingleAsync(u => u.Id.Equals(oldTicket.EmployeeId));
+                await _userManager.AddToRoleAsync(user, "Assigned");
+            }
+            else
+            {
+                oldTicket.EmployeeId = null;
+                oldTicket.Employee = null;
             }
 
             if (ModelState.IsValid)

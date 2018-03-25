@@ -1,22 +1,14 @@
 ﻿@model IEnumerable<BugTrackerService.Data.Models.Ticket>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Dashboard";
 }
 
-<h2>Reports</h2>
+<h2>Your Tickets</h2>
 
 <p>
-    <a asp-action="Create" class="btn btn-default">Create new report!</a>
+
 </p>
-<form asp-action="Index" method="get">
-    <div class="form-actions no-color">
-        <p>Before create new report, find a key-word in title: </p>
-        <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-        <input type="submit" value="Search" class="btn btn-default" /> |
-        <a asp-action="Index">Back to Full List</a>
-    </div>
-</form>
 <table class="table">
     <thead>
         <tr>
@@ -36,7 +28,7 @@
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["ProductSortParm"]">@Html.DisplayNameFor(model => model.ProductId)</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["AssignedSortParm"]">@Html.DisplayNameFor(model => model.EmployeeId)</a>
@@ -67,7 +59,9 @@
                     @Html.DisplayFor(modelItem => item.Product.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Title)
+                    <a asp-controller="Tickets" asp-action="Details" asp-route-id="@item.TicketId">
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </a>
                 </td>
                 <td>
                     @{
@@ -77,18 +71,12 @@
                         }
                         else
                         {
-                            @Html.Display("No assigned")
+                            @:Not Assigned
                         }
                     }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.UpdateDate)
-                </td>
-               <td> <a asp-action="Details" asp-route-id="@item.TicketId">Show details</a> |
-                @if (User.IsInRole("Admin"))
-                {
-                        <a asp-action="Delete" asp-route-id="@item.TicketId">Delete</a>
-                }
                 </td>
             </tr>
         }

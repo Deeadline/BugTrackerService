@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BugTrackerService.Data.Models
 {
@@ -10,7 +11,7 @@ namespace BugTrackerService.Data.Models
         [Required]
         public string Content { get; set; }
 
-        public string SendTime { get; set; }
+        public DateTime SendTime { get; set; }
         [Display(Name = "Author")]
         public string UserId { get; set; }
 

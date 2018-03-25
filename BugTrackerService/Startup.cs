@@ -29,6 +29,10 @@ namespace BugTrackerService
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireOwnerOrHigher", policy => policy.RequireRole("Admin", "Owner", "Assigned", "Employee"));
+            });
 
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
