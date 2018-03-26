@@ -25,13 +25,6 @@ namespace BugTrackerService.Controllers
             _userManager = userManager;
         }
 
-        //// GET: Tickets
-        //public async Task<IActionResult> Index()
-        //{
-        //    var tickets = _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product);
-        //    return View(await tickets.ToListAsync());
-        //}
-
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
             ViewData["OwnerSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";

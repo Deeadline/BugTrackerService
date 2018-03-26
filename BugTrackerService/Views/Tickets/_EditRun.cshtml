@@ -1,9 +1,0 @@
-﻿@inject UserManager<User> UserManager
-@model BugTrackerService.Models.TicketViewModels.TicketCommentViewModel
-
-@if ((UserManager.GetUserId(User).Equals(Model.Ticket.OwnerId) && User.IsInRole("Owner")) || User.IsInRole("Admin") || User.IsInRole("Employee"))
-{
-    <div>
-        <a asp-action="Edit" asp-route-id="@Model.Ticket.TicketId">Edit</a>
-    </div>
-}
