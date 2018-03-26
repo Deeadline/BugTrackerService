@@ -78,14 +78,14 @@
         </dd>
     </dl>
 </div>
-<div class="form-group">
-    <form asp-controller="Tickets" asp-action="Details" asp-route-id="@Model.Ticket.TicketId" method="post">
-        <label asp-for="Comment" class="control-label"></label>
-        <textarea asp-for="Comment.Content" class="form-control" placeholder="Add comment!"></textarea>
-        <span asp-validation-for="Comment.Content" class="text-danger"></span>
-        <input type="submit" value="Add comment" class="btn btn-default" />
-    </form>
-</div>
+@*<div class="form-group">
+        <form asp-action="Details">
+            <label asp-for="Comment" class="control-label"></label>
+            <textarea asp-for="Comment.Content" class="form-control" placeholder="Add comment!"></textarea>
+            <span asp-validation-for="Comment.Content" class="text-danger"></span>
+            <input type="submit" value="Add comment" class="btn btn-default" />
+        </form>
+    </div>*@
 
 <div>
     @await Html.PartialAsync("_EditRun")

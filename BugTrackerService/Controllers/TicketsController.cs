@@ -45,7 +45,7 @@ namespace BugTrackerService.Controllers
                           select s;
             if (!String.IsNullOrEmpty(searchString))
             {
-                tickets = tickets.Where(d => d.Description.Contains(searchString));
+                tickets = tickets.Where(d => d.Title.Contains(searchString));
             }
             switch (sortOrder)
             {
@@ -97,7 +97,7 @@ namespace BugTrackerService.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e=>e.Employee).Include(p=>p.Product).SingleOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e=>e.Employee).Include(p=>p.Product).Include(c=>c.Comments).SingleOrDefaultAsync(m => m.TicketId == id);
             var model = new TicketCommentViewModel() { Ticket = ticket, Comment = new Comment() };
             if (ticket == null)
             {
@@ -108,25 +108,46 @@ namespace BugTrackerService.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Details(int? id, TicketCommentViewModel model)
+        public async Task<IActionResult> Details(int id, TicketCommentViewModel model)
         {
-            if (id == null)
+            var ticket = model.Ticket;
+            if (id != ticket.TicketId || ticket == null)
             {
                 return NotFound();
             }
-            var ticket = await _context.Tickets.SingleOrDefaultAsync(u => u.TicketId == id);
+
+            var oldTicket = await _context.Tickets.SingleOrDefaultAsync(t => t.TicketId == ticket.TicketId);
+            var comment = model.Comment;
             var user = await GetCurrentUserAsync();
-            if(ticket == null)
+
+            oldTicket.Comments.Add(comment);
+
+            comment.SendTime = DateTime.Now;
+            comment.TicketID = ticket.TicketId;
+            comment.Ticket = ticket;
+            comment.UserId = user.Id;
+            comment.User = user;
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                try
+                {
+                    await _context.Comments.AddAsync(comment);
+                    _context.Update(oldTicket);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!TicketExists(oldTicket.TicketId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
             }
-            model.Comment.SendTime = DateTime.Now;
-            model.Comment.TicketID = ticket.TicketId;
-            model.Comment.Ticket = ticket;
-            model.Comment.UserId = user.Id;
-            model.Comment.User = user;
-            _context.Comments.Add(model.Comment);
-            ticket.Comments = await _context.Comments.ToListAsync();
             return View(model);
         }
 
@@ -201,7 +222,7 @@ namespace BugTrackerService.Controllers
             {
                 return NotFound();
             }
-            var oldTicket = await _context.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticket.TicketId);
+            var oldTicket = await _context.Tickets.SingleOrDefaultAsync(t => t.TicketId == ticket.TicketId);
             oldTicket.Title = ticket.Title;
             oldTicket.Description = ticket.Description;
             oldTicket.Priority = ticket.Priority;
