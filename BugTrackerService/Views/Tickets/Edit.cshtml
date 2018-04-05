@@ -13,6 +13,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Ticket.TicketId" />
+
             <div class="form-group">
                 <label asp-for="Ticket.OwnerId" class="control-label"></label>
                 @Html.DisplayFor(u => u.Ticket.Owner.FullName)
@@ -53,4 +54,3 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-

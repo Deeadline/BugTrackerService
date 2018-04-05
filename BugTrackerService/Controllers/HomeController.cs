@@ -14,6 +14,10 @@ namespace BugTrackerService.Controllers
         {
             return View();
         }
+        public IActionResult Administrator()
+        {
+            return View();
+        }
 
         public IActionResult Error()
         {

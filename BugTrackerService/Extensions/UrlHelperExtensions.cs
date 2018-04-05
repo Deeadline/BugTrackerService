@@ -16,6 +16,14 @@ namespace Microsoft.AspNetCore.Mvc
                 values: new { userId, code },
                 protocol: scheme);
         }
+        public static string EmailUpdateLink(this IUrlHelper urlHelper, int ticketId, string scheme)
+        {
+            return urlHelper.Action(
+                action: nameof(TicketsController.Details),
+                controller: "Tickets",
+                values: new { id = ticketId  },
+                protocol: scheme);
+        }
 
         public static string ResetPasswordCallbackLink(this IUrlHelper urlHelper, string userId, string code, string scheme)
         {

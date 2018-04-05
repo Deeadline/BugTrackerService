@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +6,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BugTrackerService.Data;
-using BugTrackerService.Models;
 using BugTrackerService.Services;
 using BugTrackerService.Data.Models;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace BugTrackerService
 {
@@ -40,7 +38,7 @@ namespace BugTrackerService
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
-
+            //services.AddSingleton<IFileProvider>(new PhysicalFileProvider(ConfigurationPath.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
             services.AddMvc();
         }
 

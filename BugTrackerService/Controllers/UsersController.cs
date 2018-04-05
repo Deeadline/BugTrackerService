@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using BugTrackerService.Data;
 using BugTrackerService.Data.Models;
 using Microsoft.AspNetCore.Authorization;
+using BugTrackerService.Models.AccountViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugTrackerService.Controllers
 {
@@ -12,10 +14,12 @@ namespace BugTrackerService.Controllers
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Users
@@ -92,6 +96,36 @@ namespace BugTrackerService.Controllers
 
             return View(user);
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Create(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(RegisterViewModel model, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+
+            if (ModelState.IsValid)
+            {
+                var user = new User { FirstName = model.Name, LastName = model.Surname, Email = model.Email, UserName = model.Email, CompanyName = model.CompanyName, PhoneNumber = model.PhoneNumber, WorkerCardNumber = model.WorkerCardNumber };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "Employee");
+                    return RedirectToLocal(returnUrl);
+                }
+                AddErrors(result);
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
 
         // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -107,6 +141,24 @@ namespace BugTrackerService.Controllers
         private bool UserExists(string id)
         {
             return _context.User.Any(e => e.Id == id);
+        }
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
+        }
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
         }
     }
 }

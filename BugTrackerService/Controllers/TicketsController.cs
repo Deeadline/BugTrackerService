@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using BugTrackerService.Models.TicketViewModels;
 using System.IO;
+using BugTrackerService.Services;
 
 namespace BugTrackerService.Controllers
 {
@@ -18,11 +19,13 @@ namespace BugTrackerService.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly IEmailSender _emailSender;
 
-        public TicketsController(ApplicationDbContext context, UserManager<User> userManager)
+        public TicketsController(ApplicationDbContext context, UserManager<User> userManager, IEmailSender emailSender)
         {
             _context = context;
             _userManager = userManager;
+            _emailSender = emailSender;
         }
 
         public async Task<IActionResult> Index(string sortOrder, string searchString)
@@ -90,7 +93,7 @@ namespace BugTrackerService.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e=>e.Employee).Include(p=>p.Product).Include(c=>c.Comments).SingleOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product).Include(c => c.Comments).SingleOrDefaultAsync(m => m.TicketId == id);
             var model = new TicketCommentViewModel() { Ticket = ticket, Comment = new Comment() };
             if (ticket == null)
             {
@@ -147,7 +150,7 @@ namespace BugTrackerService.Controllers
         // GET: Tickets/Create
         public IActionResult Create()
         {
-           Product[] products = _context.Products.ToArray();
+            Product[] products = _context.Products.ToArray();
             TicketCreateEditViewModel model = new TicketCreateEditViewModel()
             {
                 Ticket = new Ticket(),
@@ -194,7 +197,14 @@ namespace BugTrackerService.Controllers
 
             var ticket = await _context.Tickets.Include(u => u.Owner).Include(e => e.Employee).Include(m => m.Product).SingleOrDefaultAsync(m => m.TicketId == id);
             Product[] products = _context.Products.ToArray();
-            var model = new TicketCreateEditViewModel() { Ticket = ticket, Products = products.Select(x => new SelectListItem { Value = x.ProductId.ToString(), Text = x.Name, Selected = true }) };
+            User[] users = _context.Users.Where(u => u.WorkerCardNumber != null).ToArray();
+            var model = new TicketCreateEditViewModel()
+            {
+                Ticket = ticket,
+                Products = products.Select(x => new SelectListItem { Value = x.ProductId.ToString(), Text = x.Name, Selected = true })
+                ,
+                Users = users.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.FullName, Selected = true })
+            };
             if (ticket == null)
             {
                 return NotFound();
@@ -211,6 +221,7 @@ namespace BugTrackerService.Controllers
         public async Task<IActionResult> Edit(int id, TicketCreateEditViewModel ticketModel)
         {
             var ticket = ticketModel.Ticket;
+            var selected = ticketModel.Users;
             if (id != ticket.TicketId)
             {
                 return NotFound();
@@ -221,16 +232,25 @@ namespace BugTrackerService.Controllers
             oldTicket.Priority = ticket.Priority;
             oldTicket.Status = ticket.Status;
             oldTicket.UpdateDate = DateTime.Now;
-            oldTicket.Assigned = ticket.Assigned;
+            oldTicket.Product = ticket.Product;
             if (ticket.Assigned)
             {
+                oldTicket.Assigned = true;
                 var user = await GetCurrentUserAsync();
                 oldTicket.EmployeeId = user.Id;
-                oldTicket.Employee = await _context.Users.SingleAsync(u => u.Id.Equals(oldTicket.EmployeeId));
+                oldTicket.Employee = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.EmployeeId));
                 await _userManager.AddToRoleAsync(user, "Assigned");
+            }
+            else if (User.IsInRole("Admin"))
+            {
+                oldTicket.Assigned = true;
+                oldTicket.EmployeeId = ticket.EmployeeId;
+                oldTicket.Employee = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.EmployeeId));
+                await _userManager.AddToRoleAsync(oldTicket.Employee, "Assigned");
             }
             else
             {
+                oldTicket.Assigned = false;
                 oldTicket.EmployeeId = null;
                 oldTicket.Employee = null;
             }
@@ -239,6 +259,9 @@ namespace BugTrackerService.Controllers
             {
                 try
                 {
+                    var user = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.OwnerId));
+                    var callbackUrl = Url.EmailUpdateLink(oldTicket.TicketId, Request.Scheme);
+                    await _emailSender.SendEmailUpdateAsync(user.Email, callbackUrl);
                     _context.Update(oldTicket);
                     await _context.SaveChangesAsync();
                 }

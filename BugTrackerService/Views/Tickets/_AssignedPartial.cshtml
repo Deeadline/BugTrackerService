@@ -1,9 +1,17 @@
 ﻿@model BugTrackerService.Models.TicketViewModels.TicketCreateEditViewModel
 
-@if ((User.IsInRole("Employee") || User.IsInRole("Admin")))
+@if ((User.IsInRole("Employee")))
 {
     <div class="form-check">
         @Html.CheckBoxFor(m => m.Ticket.Assigned, new { @checked = "checked" })
         @Html.LabelFor(m => m.Ticket.Assigned, "Do you want assign?")
+    </div>
+}
+@if(User.IsInRole("Admin"))
+{
+    <div class="form-group">
+        <label asp-for="Ticket.Employee" class="control-label"></label>
+        <select asp-for="Ticket.EmployeeId" asp-items="Model.Users" class="form-control"></select>
+        <span asp-validation-for="Ticket.Employee" class="text-danger"></span>
     </div>
 }

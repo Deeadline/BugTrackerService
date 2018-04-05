@@ -10,6 +10,8 @@ namespace BugTrackerService.Models.TicketViewModels
         public Ticket Ticket { get; set; }
         public IFormFile File { get; set; }
         public int ProductId { get; set; }
+        public int UserId { get; set; }
         public IEnumerable<SelectListItem> Products { get; set; }
+        public IEnumerable<SelectListItem> Users { get; set; }
     }
 }
