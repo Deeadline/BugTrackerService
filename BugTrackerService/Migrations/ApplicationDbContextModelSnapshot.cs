@@ -19,6 +19,7 @@ namespace BugTrackerService.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
+                .HasAnnotation("Relational:Sequence:shared.Id", "'Id', 'shared', '1', '1', '0', '', 'Int32', 'False'")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("BugTrackerService.Data.Models.Comment", b =>
@@ -77,7 +78,8 @@ namespace BugTrackerService.Migrations
             modelBuilder.Entity("BugTrackerService.Data.Models.Ticket", b =>
                 {
                     b.Property<int>("TicketId")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("NEXT VALUE FOR shared.Id");
 
                     b.Property<bool>("Assigned");
 

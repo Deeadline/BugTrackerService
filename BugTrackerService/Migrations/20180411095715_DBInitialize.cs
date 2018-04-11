@@ -9,6 +9,14 @@ namespace BugTrackerService.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "shared");
+
+            migrationBuilder.CreateSequence<int>(
+                name: "Id",
+                schema: "shared",
+                minValue: 0L);
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -175,8 +183,7 @@ namespace BugTrackerService.Migrations
                 name: "Tickets",
                 columns: table => new
                 {
-                    TicketId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    TicketId = table.Column<int>(nullable: false, defaultValueSql: "NEXT VALUE FOR shared.Id"),
                     Assigned = table.Column<bool>(nullable: false),
                     CreateDate = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(maxLength: 60, nullable: false),
@@ -363,6 +370,10 @@ namespace BugTrackerService.Migrations
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropSequence(
+                name: "Id",
+                schema: "shared");
         }
     }
 }

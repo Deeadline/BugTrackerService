@@ -13,9 +13,6 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.TicketId)
-            </th>
-            <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["OwnerSortParm"]">@Html.DisplayNameFor(model => model.OwnerId)</a>
             </th>
             <th>
@@ -43,9 +40,6 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TicketId)
-                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Owner.FullName)
                 </td>

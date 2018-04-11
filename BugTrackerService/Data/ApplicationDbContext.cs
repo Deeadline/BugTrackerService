@@ -24,13 +24,28 @@ namespace BugTrackerService.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<User>().ToTable("Users");
-            modelBuilder.Entity<User>().HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-            modelBuilder.Entity<Ticket>().ToTable("Tickets");
-            modelBuilder.Entity<User>().HasMany(t => t.EmployeeTickets).WithOne(t => t.Employee);
-            modelBuilder.Entity<User>().HasMany(t => t.OwnerTickets).WithOne(t => t.Owner);
-            modelBuilder.Entity<Ticket>().HasOne(u => u.Owner).WithMany(u => u.OwnerTickets);
-            modelBuilder.Entity<Ticket>().HasOne(u => u.Employee).WithMany(u => u.EmployeeTickets);
+            modelBuilder.HasSequence<int>("Id", schema: "shared")
+                .StartsAt(1)
+                .IncrementsBy(1)
+                .HasMin(0);
+            modelBuilder.Entity<Ticket>()
+                .Property(o => o.TicketId)
+                .HasDefaultValueSql("NEXT VALUE FOR shared.Id");
+            modelBuilder.Entity<User>()
+                .ToTable("Users");
+            modelBuilder.Entity<User>()
+                .HasAnnotation("SqlServer:ValueGenerationStrategy",
+                SqlServerValueGenerationStrategy.IdentityColumn);
+            modelBuilder.Entity<Ticket>()
+                .ToTable("Tickets");
+            modelBuilder.Entity<User>().HasMany(t => t.EmployeeTickets)
+                .WithOne(t => t.Employee);
+            modelBuilder.Entity<User>().HasMany(t => t.OwnerTickets)
+                .WithOne(t => t.Owner);
+            modelBuilder.Entity<Ticket>().HasOne(u => u.Owner)
+                .WithMany(u => u.OwnerTickets);
+            modelBuilder.Entity<Ticket>().HasOne(u => u.Employee)
+                .WithMany(u => u.EmployeeTickets);
         }
     }
 }
