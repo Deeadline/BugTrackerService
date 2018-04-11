@@ -11,6 +11,10 @@ using Microsoft.AspNetCore.Identity;
 using BugTrackerService.Models.TicketViewModels;
 using System.IO;
 using BugTrackerService.Services;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.Net;
 
 namespace BugTrackerService.Controllers
 {
@@ -20,12 +24,14 @@ namespace BugTrackerService.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public TicketsController(ApplicationDbContext context, UserManager<User> userManager, IEmailSender emailSender)
+        public TicketsController(ApplicationDbContext context, UserManager<User> userManager, IEmailSender emailSender, IHostingEnvironment hostingEnvironment)
         {
             _context = context;
             _userManager = userManager;
             _emailSender = emailSender;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public async Task<IActionResult> Index(string sortOrder, string searchString)
@@ -93,7 +99,7 @@ namespace BugTrackerService.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product).Include(c => c.Comments).SingleOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product).Include(c => c.Comments).Include(f=>f.FileDetails).SingleOrDefaultAsync(m => m.TicketId == id);
             var model = new TicketCommentViewModel() { Ticket = ticket, Comment = new Comment() };
             if (ticket == null)
             {
@@ -147,6 +153,7 @@ namespace BugTrackerService.Controllers
             return View(model);
         }
 
+
         // GET: Tickets/Create
         public IActionResult Create()
         {
@@ -166,6 +173,7 @@ namespace BugTrackerService.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TicketCreateEditViewModel ticketModel)
         {
+            var files = ticketModel.Files;
             var user = await GetCurrentUserAsync();
             var ticket = ticketModel.Ticket;
             ticket.ProductId = ticketModel.ProductId;
@@ -176,9 +184,37 @@ namespace BugTrackerService.Controllers
             ticket.Priority = Priority.Medium;
             ticket.OwnerId = user.Id;
             ticket.Owner = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));
+            
             await _userManager.AddToRoleAsync(user, "Owner");
+
+            {
+                List<FileDetail> fileDetails = new List<FileDetail>();
+                for (int i = 0; i < Request.Form.Files.Count; i++)
+                {
+                    var file = Request.Form.Files[i];
+                    if (file != null && file.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(file.FileName);
+                        FileDetail fileDetail = new FileDetail()
+                        {
+                            Id = Guid.NewGuid(),
+                            FileName = fileName,
+                            Extension = Path.GetExtension(fileName).ToLower(),
+                            TicketId = ticket.TicketId,
+                            Ticket = ticket
+                        };
+                        var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "Uploads");
+                        var filePath = Path.Combine(uploads, fileDetail.Id + fileDetail.Extension);
+                        await file.CopyToAsync(new FileStream(filePath, FileMode.Create));
+                        fileDetails.Add(fileDetail);
+                        _context.FileDetail.Add(fileDetail);
+                    }
+                }
+                ticket.FileDetails = fileDetails;
+            }
             if (ModelState.IsValid)
             {
+                
                 _context.Tickets.Add(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -195,7 +231,7 @@ namespace BugTrackerService.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(u => u.Owner).Include(e => e.Employee).Include(m => m.Product).SingleOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _context.Tickets.Include(u => u.Owner).Include(e => e.Employee).Include(m => m.Product).Include(f=>f.FileDetails).SingleOrDefaultAsync(m => m.TicketId == id);
             Product[] products = _context.Products.ToArray();
             User[] users = _context.Users.Where(u => u.WorkerCardNumber != null).ToArray();
             var model = new TicketCreateEditViewModel()
@@ -212,9 +248,7 @@ namespace BugTrackerService.Controllers
             return View(model);
         }
 
-        // POST: Tickets/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [Authorize(Policy = "RequireOwnerOrHigher")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -233,20 +267,23 @@ namespace BugTrackerService.Controllers
             oldTicket.Status = ticket.Status;
             oldTicket.UpdateDate = DateTime.Now;
             oldTicket.Product = ticket.Product;
-            if (ticket.Assigned)
+            if (ticketModel.Users != null)
             {
-                oldTicket.Assigned = true;
-                var user = await GetCurrentUserAsync();
-                oldTicket.EmployeeId = user.Id;
-                oldTicket.Employee = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.EmployeeId));
-                await _userManager.AddToRoleAsync(user, "Assigned");
-            }
-            else if (User.IsInRole("Admin"))
-            {
-                oldTicket.Assigned = true;
-                oldTicket.EmployeeId = ticket.EmployeeId;
-                oldTicket.Employee = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.EmployeeId));
-                await _userManager.AddToRoleAsync(oldTicket.Employee, "Assigned");
+                if (ticket.Assigned)
+                {
+                    oldTicket.Assigned = true;
+                    var user = await GetCurrentUserAsync();
+                    oldTicket.EmployeeId = user.Id;
+                    oldTicket.Employee = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.EmployeeId));
+                    await _userManager.AddToRoleAsync(user, "Assigned");
+                }
+                else if (User.IsInRole("Admin"))
+                {
+                    oldTicket.Assigned = true;
+                    oldTicket.EmployeeId = ticket.EmployeeId;
+                    oldTicket.Employee = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.EmployeeId));
+                    await _userManager.AddToRoleAsync(oldTicket.Employee, "Assigned");
+                }
             }
             else
             {
@@ -255,8 +292,34 @@ namespace BugTrackerService.Controllers
                 oldTicket.Employee = null;
             }
 
+            {
+                List<FileDetail> fileDetails = new List<FileDetail>();
+                for (int i = 0; i < Request.Form.Files.Count; i++)
+                {
+                    var file = Request.Form.Files[i];
+                    if (file != null && file.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(file.FileName);
+                        FileDetail fileDetail = new FileDetail()
+                        {
+                            Id = Guid.NewGuid(),
+                            FileName = fileName,
+                            Extension = Path.GetExtension(fileName).ToLower(),
+                            TicketId = ticket.TicketId,
+                            Ticket = ticket
+                        };
+                        var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "Uploads");
+                        var filePath = Path.Combine(uploads, fileDetail.Id + fileDetail.Extension);
+                        await file.CopyToAsync(new FileStream(filePath, FileMode.Create));
+                        fileDetails.Add(fileDetail);
+                        _context.FileDetail.Add(fileDetail);
+                    }
+                }
+                oldTicket.FileDetails = fileDetails;
+            }
             if (ModelState.IsValid)
             {
+                
                 try
                 {
                     var user = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.OwnerId));
@@ -306,10 +369,95 @@ namespace BugTrackerService.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var ticket = await _context.Tickets.SingleOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _context.Tickets.Include(e => e.FileDetails).SingleOrDefaultAsync(m => m.TicketId == id);
+
+            foreach (var item in ticket.FileDetails)
+            {
+                var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "Uploads");
+                var filePath = Path.Combine(uploads, item.Id + item.Extension);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
             _context.Tickets.Remove(ticket);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Download(string fileName, string ticketId)
+        {
+            if (fileName == null)
+                return Content("filename not present");
+
+            var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "Uploads");
+            var filePath = Path.Combine(uploads, fileName);
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            return File(memory, GetContentType(filePath), Path.GetFileName(filePath));
+        }
+
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+
+        private Dictionary<string, string> GetMimeTypes() => new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
+
+        [HttpPost]
+        public JsonResult DeleteFile(string id)
+        {
+            if (String.IsNullOrEmpty(id))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { Result = "Error" });
+            }
+            try
+            {
+                Guid guid = new Guid(id);
+                FileDetail fileDetail = _context.FileDetail.Find(guid);
+                if (fileDetail == null)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.NotFound;
+                    return Json(new { Result = "Error" });
+                }
+
+                //Remove from database
+                _context.FileDetail.Remove(fileDetail);
+                _context.SaveChanges();
+
+                //Delete file from the file system
+                var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                var path = Path.Combine(uploads, fileDetail.Id + fileDetail.Extension);
+                if (System.IO.File.Exists(uploads))
+                {
+                    System.IO.File.Delete(uploads);
+                }
+                return Json(new { Result = "OK" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = "ERROR", ex.Message });
+            }
         }
 
         private bool TicketExists(int id)
@@ -317,5 +465,21 @@ namespace BugTrackerService.Controllers
             return _context.Tickets.Any(e => e.TicketId == id);
         }
         private Task<User> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+        private string GenerateUniqueName(string fileName)
+        {
+            fileName = Path.GetFileName(fileName);
+            return Path.GetFileNameWithoutExtension(fileName)
+                      + "_"
+                      + Guid.NewGuid().ToString().Substring(0, 4)
+                      + Path.GetExtension(fileName);
+        }
+        private byte[] ConvertToBiteArray(IFormFile file)
+        {
+            using (var target = new MemoryStream())
+            {
+                file.CopyTo(target);
+                return target.ToArray();
+            }
+        }
     }
 }

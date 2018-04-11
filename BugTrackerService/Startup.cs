@@ -38,7 +38,6 @@ namespace BugTrackerService
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
-            //services.AddSingleton<IFileProvider>(new PhysicalFileProvider(ConfigurationPath.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
             services.AddMvc();
         }
 

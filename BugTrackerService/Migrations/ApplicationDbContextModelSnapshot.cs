@@ -44,6 +44,24 @@ namespace BugTrackerService.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("BugTrackerService.Data.Models.FileDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Extension");
+
+                    b.Property<string>("FileName");
+
+                    b.Property<int>("TicketId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("FileDetail");
+                });
+
             modelBuilder.Entity("BugTrackerService.Data.Models.Product", b =>
                 {
                     b.Property<int>("ProductId")
@@ -70,8 +88,6 @@ namespace BugTrackerService.Migrations
                         .HasMaxLength(60);
 
                     b.Property<string>("EmployeeId");
-
-                    b.Property<byte[]>("File");
 
                     b.Property<string>("OwnerId");
 
@@ -283,6 +299,14 @@ namespace BugTrackerService.Migrations
                     b.HasOne("BugTrackerService.Data.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("BugTrackerService.Data.Models.FileDetail", b =>
+                {
+                    b.HasOne("BugTrackerService.Data.Models.Ticket", "Ticket")
+                        .WithMany("FileDetails")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("BugTrackerService.Data.Models.Ticket", b =>

@@ -20,6 +20,7 @@ namespace BugTrackerService.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<FileDetail> FileDetail { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

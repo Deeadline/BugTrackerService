@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Ticket.Title" class="control-label"></label>
@@ -27,6 +27,12 @@
                     <label asp-for="Ticket.Description" class="control-label"></label>
                     <textarea asp-for="Ticket.Description" class="form-control" placeholder="Describe your problem!"></textarea>
                     <span asp-validation-for="Ticket.Description" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-10">
+                    <p>Upload one or more files</p>
+                    <input type="file" name="file" multiple />
                 </div>
             </div>
             <div class="form-group">

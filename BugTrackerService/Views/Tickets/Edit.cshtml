@@ -45,6 +45,21 @@
                 <span asp-validation-for="Ticket.Priority" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <div class="col-md-10">
+                    <p>Upload one or more files</p>
+                    <input type="file" name="file" multiple />
+                </div>
+                <ul class="attachment">
+                    @foreach (var item in Model.Ticket.FileDetails)
+                    {
+                        <li>
+                            <a class="title" href="/Tickets/Download/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId">@item.FileName</a>
+                            <a href="javascript:void(0);" data-id="@item.Id" class="deleteItem">X</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </form>
@@ -54,3 +69,31 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+
+    <script>
+        $('.deleteItem').click(function (e) {
+            e.preventDefault();
+            var $ctrl = $(this);
+            if (confirm('Do you really want to delete this file?')) {
+                $.ajax({
+                    url: '@Url.Action("DeleteFile")',
+                    type: 'POST',
+                    data: { id: $(this).data('id') }
+                }).done(function (data) {
+                    if (data.Result == "OK") {
+                        $ctrl.closest('li').remove();
+                    }
+                    else if (data.Result.Message) {
+                        alert(data.Result.Message);
+                    }
+                }).fail(function () {
+                    alert("There is something wrong. Please try again.");
+                })
+
+            }
+        });
+    </script>
+
+}

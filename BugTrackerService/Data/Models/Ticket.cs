@@ -54,7 +54,7 @@ namespace BugTrackerService.Data.Models
         public ICollection<Comment> Comments { get; set; }
 
         public bool Assigned { get; set; }
-        public byte[] File { get; set; }
+        public List<FileDetail> FileDetails { get; set; }
     }
     public enum Status
     {

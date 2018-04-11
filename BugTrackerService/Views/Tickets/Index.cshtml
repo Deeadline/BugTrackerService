@@ -84,11 +84,12 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.UpdateDate)
                 </td>
-               <td> <a asp-action="Details" asp-route-id="@item.TicketId">Show details</a> |
-                @if (User.IsInRole("Admin"))
-                {
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.TicketId">Show details</a> |
+                    @if (User.IsInRole("Admin"))
+                    {
                         <a asp-action="Delete" asp-route-id="@item.TicketId">Delete</a>
-                }
+                    }
                 </td>
             </tr>
         }

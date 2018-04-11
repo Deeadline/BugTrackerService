@@ -181,7 +181,6 @@ namespace BugTrackerService.Migrations
                     CreateDate = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(maxLength: 60, nullable: false),
                     EmployeeId = table.Column<string>(nullable: true),
-                    File = table.Column<byte[]>(nullable: true),
                     OwnerId = table.Column<string>(nullable: true),
                     Priority = table.Column<int>(nullable: false),
                     ProductId = table.Column<int>(nullable: true),
@@ -219,7 +218,7 @@ namespace BugTrackerService.Migrations
                     CommentID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Content = table.Column<string>(nullable: false),
-                    SendTime = table.Column<string>(nullable: true),
+                    SendTime = table.Column<DateTime>(nullable: false),
                     TicketID = table.Column<int>(nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },
@@ -238,6 +237,26 @@ namespace BugTrackerService.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FileDetail",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Extension = table.Column<string>(nullable: true),
+                    FileName = table.Column<string>(nullable: true),
+                    TicketId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileDetail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FileDetail_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "TicketId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -276,6 +295,11 @@ namespace BugTrackerService.Migrations
                 name: "IX_Comments_UserId",
                 table: "Comments",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FileDetail_TicketId",
+                table: "FileDetail",
+                column: "TicketId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_EmployeeId",
@@ -324,6 +348,9 @@ namespace BugTrackerService.Migrations
 
             migrationBuilder.DropTable(
                 name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "FileDetail");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
