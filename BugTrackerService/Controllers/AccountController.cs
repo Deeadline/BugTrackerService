@@ -22,7 +22,7 @@ namespace BugTrackerService.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly ILogger _logger;
+        private readonly ILogger<AccountController> _logger;
 
         public AccountController(
             UserManager<User> userManager,

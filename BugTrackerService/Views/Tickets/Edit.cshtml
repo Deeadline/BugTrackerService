@@ -82,11 +82,11 @@
                     type: 'POST',
                     data: { id: $(this).data('id') }
                 }).done(function (data) {
-                    if (data.Result == "OK") {
+                    if (data.result) {
                         $ctrl.closest('li').remove();
                     }
-                    else if (data.Result.Message) {
-                        alert(data.Result.Message);
+                    else if (!data.result) {
+                        alert(data.Message);
                     }
                 }).fail(function () {
                     alert("There is something wrong. Please try again.");

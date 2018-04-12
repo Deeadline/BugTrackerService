@@ -27,7 +27,7 @@ namespace BugTrackerService.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly ILogger _logger;
+        private readonly ILogger<TicketsController> _logger;
 
         public TicketsController(ApplicationDbContext context, 
             UserManager<User> userManager, 
@@ -257,8 +257,8 @@ namespace BugTrackerService.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product).Include(c => c.Comments).Include(f => f.FileDetails).SingleOrDefaultAsync(m => m.TicketId == id);
-            var model = new TicketCommentViewModel() { Ticket = ticket };
+            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product).Include(c => c.Comments).Include(f => f.FileDetails).FirstAsync(m => m.TicketId == id);
+            var model = new TicketCommentViewModel() { Ticket = ticket, Comment = new Comment()};
             if (ticket == null)
             {
                 _logger.LogDebug("Ticket not found");
@@ -271,35 +271,42 @@ namespace BugTrackerService.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Details(int id, TicketCommentViewModel model)
         {
-            var ticket = model.Ticket;
-            if (id != ticket.TicketId)
+            _logger.LogInformation("ID equals " + id);
+            _logger.LogInformation("Model.Comment.Content = " + model.Comment.Content);
+            var ticket = await _context.Tickets
+                .FirstAsync(m => m.TicketId == id);
+            _logger.LogInformation("My Tickets contain:" + ticket.TicketId + " " + ticket.Comments + " " + ticket.Title);
+            if(ticket == null)
             {
                 return NotFound();
             }
-
-            var oldTicket = await _context.Tickets.SingleOrDefaultAsync(t => t.TicketId == ticket.TicketId);
-            var comment = new Comment();
             var user = await GetCurrentUserAsync();
+            var comment = new Comment()
+            {
+                Content = model.Comment.Content,
+                SendTime = DateTime.Now,
+                TicketID = ticket.TicketId,
+                Ticket = ticket,
+                UserId = user.Id,
+                User = user,
+            };
+            _logger.LogInformation("My new Comment contain: " + comment.Content + " " + comment.SendTime);
+            ticket.Comments = new List<Comment>
+            {
+                comment
+            };
 
-            oldTicket.Comments.Add(comment);
-
-            comment.Content = model.Comment.Content;
-            comment.SendTime = DateTime.Now;
-            comment.TicketID = ticket.TicketId;
-            comment.Ticket = ticket;
-            comment.UserId = user.Id;
-            comment.User = user;
             if (ModelState.IsValid)
             {
                 try
                 {
                     await _context.Comments.AddAsync(comment);
-                    _context.Update(oldTicket);
+                    _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TicketExists(oldTicket.TicketId))
+                    if (!TicketExists(ticket.TicketId))
                     {
                         return NotFound();
                     }
@@ -355,11 +362,11 @@ namespace BugTrackerService.Controllers
             return RedirectToAction(nameof(Index));
         }
         [HttpPost]
-        public async Task<IActionResult> DeleteFile(string id)
+        public async Task<JsonResult> DeleteFile(string id)
         {
             if (String.IsNullOrEmpty(id))
             {
-                return BadRequest();
+                return Json(new { result = false, message = "Failure!" });
             }
             try
             {
@@ -367,7 +374,7 @@ namespace BugTrackerService.Controllers
                 FileDetail fileDetail = _context.FileDetail.Find(guid);
                 if (fileDetail == null)
                 {
-                    return BadRequest();
+                    return Json(new { result = false, message = "Failure!" });
                 }
 
                 //Remove from database
@@ -381,11 +388,11 @@ namespace BugTrackerService.Controllers
                 {
                     System.IO.File.Delete(uploads);
                 }
-                return Ok();
+                return Json(new { result = true, message = "Success!" });
             }
             catch (IOException ex)
             {
-                return BadRequest(ex);
+                return Json(new { result = false, message = ex.Message });
             }
 
         }

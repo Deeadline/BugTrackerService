@@ -10,6 +10,7 @@ using BugTrackerService.Services;
 using BugTrackerService.Data.Models;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace BugTrackerService
 {
@@ -42,8 +43,12 @@ namespace BugTrackerService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app,
+            IHostingEnvironment env,
+            IServiceProvider serviceProvider,
+            ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddFile("Logs/myapp-{Date}.txt",LogLevel.Information);
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();

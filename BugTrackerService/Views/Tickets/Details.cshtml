@@ -73,13 +73,21 @@
         <dt>
             @Html.DisplayNameFor(model => model.Ticket.Comments)
         </dt>
+        <dd>
+            @foreach(var comment in Model.Ticket.Comments)
+            {
+                @comment.Content <br/>
+
+            }
+        </dd>
     </dl>
     @foreach (var item in Model.Ticket.FileDetails)
     {
         if (item.Extension == ".png" || item.Extension == ".jpg" || item.Extension == ".gif" || item.Extension == ".jpeg")
         {
-    <a class="title" href="/Tickets/Download/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId"><img src="/Uploads/@(item.Id + item.Extension)" alt="@item.FileName" height="200 " width="200" /></a><br />
-
+         <a class="title" href="/Tickets/Download/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId">
+            <img src="/Uploads/@(item.Id + item.Extension)" alt="@item.FileName" height="200 " width="200" />
+         </a><br />
         }
         else
         {
