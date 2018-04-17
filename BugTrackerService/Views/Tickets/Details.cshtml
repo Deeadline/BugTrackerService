@@ -85,7 +85,7 @@
     {
         if (item.Extension == ".png" || item.Extension == ".jpg" || item.Extension == ".gif" || item.Extension == ".jpeg")
         {
-         <a class="title" href="/Tickets/Download/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId">
+         <a class="title" href="/Tickets/DownloadFile/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId">
             <img src="/Uploads/@(item.Id + item.Extension)" alt="@item.FileName" height="200 " width="200" />
          </a><br />
         }

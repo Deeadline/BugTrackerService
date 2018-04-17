@@ -31,7 +31,7 @@ namespace BugTrackerService.Services
                 Body = message
             })
             smtp.Send(messages);
-            smtp.PickupDirectoryLocation = @"E:\Licencjat\Emails";
+            smtp.PickupDirectoryLocation = @"\Emails";
             return Task.CompletedTask;
         }
     }

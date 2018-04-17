@@ -219,9 +219,9 @@ namespace BugTrackerService.Controllers
             {
                 List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync(_hostingEnvironment,
                      _context,
-                     ticket.TicketId,
+                     oldTicket.TicketId,
                      Request.Form.Files);
-                ticket.FileDetails = fileDetails;
+                oldTicket.FileDetails = fileDetails;
             }
             if (ModelState.IsValid)
             {
@@ -245,7 +245,7 @@ namespace BugTrackerService.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = ticket.TicketId.ToString() });
             }
             return View(ticketModel);
         }
@@ -271,11 +271,8 @@ namespace BugTrackerService.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Details(int id, TicketCommentViewModel model)
         {
-            _logger.LogInformation("ID equals " + id);
-            _logger.LogInformation("Model.Comment.Content = " + model.Comment.Content);
             var ticket = await _context.Tickets
                 .FirstAsync(m => m.TicketId == id);
-            _logger.LogInformation("My Tickets contain:" + ticket.TicketId + " " + ticket.Comments + " " + ticket.Title);
             if(ticket == null)
             {
                 return NotFound();
@@ -290,11 +287,11 @@ namespace BugTrackerService.Controllers
                 UserId = user.Id,
                 User = user,
             };
-            _logger.LogInformation("My new Comment contain: " + comment.Content + " " + comment.SendTime);
             ticket.Comments = new List<Comment>
             {
                 comment
             };
+            ticket.UpdateDate = DateTime.Now;
 
             if (ModelState.IsValid)
             {
@@ -315,12 +312,11 @@ namespace BugTrackerService.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = ticket.TicketId.ToString() });
             }
             return View(model);
         }
 
-        // GET: Tickets/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -397,7 +393,7 @@ namespace BugTrackerService.Controllers
 
         }
 
-        public async Task<IActionResult> Download(string fileName, string ticketId)
+        public async Task<IActionResult> DownloadFile(string fileName, string ticketId)
         {
             if (fileName == null)
                 return Content("filename not present");
