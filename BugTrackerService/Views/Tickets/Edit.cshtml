@@ -1,7 +1,7 @@
 ﻿@model BugTrackerService.Models.TicketViewModels.TicketCreateEditViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit bug";
 }
 
 <h2>Edit</h2>
@@ -36,12 +36,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Ticket.Status" class="control-label"></label>
-                <select asp-for="Ticket.Status" asp-items="@new SelectList(Enum.GetValues(typeof(Status)))" class="form-control"></select>
+                <select asp-for="Ticket.StatusId" asp-items="Model.Statuses" class="form-control"></select>
                 <span asp-validation-for="Ticket.Status" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Ticket.Priority" class="control-label"></label>
-                <select asp-for="Ticket.Priority" asp-items="@new SelectList(Enum.GetValues(typeof(Priority)))" class="form-control"></select>
+                <select asp-for="Ticket.PriorityId" asp-items="Model.Priorities" class="form-control"></select>
                 <span asp-validation-for="Ticket.Priority" class="text-danger"></span>
             </div>
             <div class="form-group">

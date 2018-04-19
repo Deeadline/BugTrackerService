@@ -1,4 +1,4 @@
-﻿@model BugTrackerService.Data.Models.User
+﻿@model BugTrackerService.Models.AccountViewModels.UserEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -32,7 +32,6 @@
                 <input asp-for="WorkerCardNumber" class="form-control" />
                 <span asp-validation-for="WorkerCardNumber" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="UserName" class="control-label"></label>
                 <input asp-for="UserName" class="form-control" />

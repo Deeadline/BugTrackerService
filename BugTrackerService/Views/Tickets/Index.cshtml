@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<BugTrackerService.Data.Models.Ticket>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Bug report list ";
 }
 
 <h2>Reports</h2>
 
 <p>
-    <a asp-action="Create" class="btn btn-default">Create new report!</a>
+    <a asp-action="Create" class="btn btn-default">Create new bug report!</a>
 </p>
 <form asp-action="Index" method="get">
     <div class="form-actions no-color">
@@ -47,17 +47,17 @@
     <tbody>
         @foreach (var item in Model)
         {
-            if (item.Status.ToString() != "Completed" || (ViewData["currentFilter"]!=null && ViewData["currentFilter"].ToString().Equals(item.Title)))
+            if (!item.Status.Name.Equals("Completed") || (ViewData["currentFilter"]!=null && ViewData["currentFilter"].ToString().Equals(item.Title)))
             {
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => item.Owner.FullName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Priority)
+                        <span class="@item.Priority.Class">@Html.DisplayFor(modelItem => item.Priority.Name)</span>
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Status)
+                        <span class="@item.Status.Class">@Html.DisplayFor(modelItem => item.Status.Name)</span>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Product.Name)
@@ -69,7 +69,7 @@
                         @{
                             if (item.EmployeeId != null)
                             {
-                                @Html.DisplayFor(modelItem => item.Employee.FullName)
+                                @Html.DisplayFor(modelItem =>  item.Employee.FullName)
                             }
                             else
                             {

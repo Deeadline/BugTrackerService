@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BugTrackerService.Data;
 using BugTrackerService.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BugTrackerService.Controllers
 {
+    [Authorize]
     public class DashboardController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -30,7 +31,12 @@ namespace BugTrackerService.Controllers
             ViewData["AssignedSortParm"] = sortOrder == "Assigned" ? "ass_desc" : "Assigned";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
             ViewData["CurrentFilter"] = searchString;
-            var tickets = from s in _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product)
+            var tickets = from s in _context.Tickets
+                          .Include(c => c.Owner)
+                          .Include(e => e.Employee)
+                          .Include(p => p.Product)
+                          .Include(s => s.Status)
+                          .Include(pr => pr.Priority)
                           select s;
             tickets = tickets.Where(u => u.OwnerId.Equals(user.Id) || u.EmployeeId.Equals(user.Id));
             if (!String.IsNullOrEmpty(searchString))

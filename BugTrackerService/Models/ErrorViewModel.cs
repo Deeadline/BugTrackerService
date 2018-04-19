@@ -1,5 +1,3 @@
-using System;
-
 namespace BugTrackerService.Models
 {
     public class ErrorViewModel

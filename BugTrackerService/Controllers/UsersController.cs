@@ -37,33 +37,46 @@ namespace BugTrackerService.Controllers
             }
 
             var user = await _context.User.SingleOrDefaultAsync(m => m.Id == id);
+            var model = new UserEditViewModel()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                EmailConfirmed = user.EmailConfirmed,
+                PhoneNumber = user.PhoneNumber,
+                UserName = user.UserName,
+                WorkerCardNumber = user.WorkerCardNumber,
+                CompanyName = user.CompanyName
+            };
             if (user == null)
             {
                 return NotFound();
             }
-            return View(user);
+            return View(model);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,CompanyName,WorkerCardNumber,UserName,Email,EmailConfirmed,PhoneNumber")] User user)
+        public async Task<IActionResult> Edit(string id, UserEditViewModel user)
         {
-            if (id != user.Id)
-            {
-                return NotFound();
-            }
-
+            var _user = await _context.Users.FirstAsync(i => i.Id.Equals(id));
+            _user.FirstName = user.FirstName;
+            _user.LastName = user.LastName;
+            _user.Email = user.Email;
+            _user.EmailConfirmed = user.EmailConfirmed;
+            _user.PhoneNumber = user.PhoneNumber;
+            _user.WorkerCardNumber = user.PhoneNumber;
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(user);
+                    _context.Update(_user);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
+                    if (!UserExists(_user.Id))
                     {
                         return NotFound();
                     }
@@ -74,7 +87,7 @@ namespace BugTrackerService.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(_user);
         }
         
         public async Task<IActionResult> Delete(string id)

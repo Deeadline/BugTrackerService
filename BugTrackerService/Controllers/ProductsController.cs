@@ -18,13 +18,11 @@ namespace BugTrackerService.Controllers
             _context = context;
         }
 
-        // GET: Products
         public async Task<IActionResult> Index()
         {
             return View(await _context.Products.ToListAsync());
         }
 
-        // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -42,15 +40,11 @@ namespace BugTrackerService.Controllers
             return View(product);
         }
 
-        // GET: Products/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Products/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProductId,Name")] Product product)
@@ -64,7 +58,6 @@ namespace BugTrackerService.Controllers
             return View(product);
         }
 
-        // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -80,9 +73,6 @@ namespace BugTrackerService.Controllers
             return View(product);
         }
 
-        // POST: Products/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name")] Product product)
@@ -115,7 +105,6 @@ namespace BugTrackerService.Controllers
             return View(product);
         }
 
-        // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -133,7 +122,6 @@ namespace BugTrackerService.Controllers
             return View(product);
         }
 
-        // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

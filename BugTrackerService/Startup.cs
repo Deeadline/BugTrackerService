@@ -8,8 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using BugTrackerService.Data;
 using BugTrackerService.Services;
 using BugTrackerService.Data.Models;
-using Microsoft.Extensions.FileProviders;
-using System.IO;
 using Microsoft.Extensions.Logging;
 
 namespace BugTrackerService
@@ -48,7 +46,7 @@ namespace BugTrackerService
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddFile("Logs/myapp-{Date}.txt",LogLevel.Information);
+            loggerFactory.AddFile("Logs/myapp-{Date}.txt", LogLevel.Information);
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();
@@ -59,7 +57,9 @@ namespace BugTrackerService
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            Seed.InitializeAsync(serviceProvider).Wait();
             Seed.CreateRoles(serviceProvider, Configuration).Wait();
+
             app.UseStaticFiles();
 
             app.UseAuthentication();

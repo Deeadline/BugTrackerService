@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace BugTrackerService.Migrations
 {
-    public partial class DBInitialize : Migration
+    public partial class DbInitialize : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -32,6 +32,20 @@ namespace BugTrackerService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Priorities",
+                columns: table => new
+                {
+                    PriorityId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Class = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Priorities", x => x.PriorityId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
@@ -42,6 +56,20 @@ namespace BugTrackerService.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.ProductId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Statuses",
+                columns: table => new
+                {
+                    StatusId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Class = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Statuses", x => x.StatusId);
                 });
 
             migrationBuilder.CreateTable(
@@ -183,15 +211,16 @@ namespace BugTrackerService.Migrations
                 name: "Tickets",
                 columns: table => new
                 {
-                    TicketId = table.Column<int>(nullable: false, defaultValueSql: "NEXT VALUE FOR shared.Id"),
+                    TicketId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Assigned = table.Column<bool>(nullable: false),
                     CreateDate = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(maxLength: 60, nullable: false),
                     EmployeeId = table.Column<string>(nullable: true),
                     OwnerId = table.Column<string>(nullable: true),
-                    Priority = table.Column<int>(nullable: false),
-                    ProductId = table.Column<int>(nullable: true),
-                    Status = table.Column<int>(nullable: false),
+                    PriorityId = table.Column<int>(nullable: false),
+                    ProductId = table.Column<int>(nullable: false),
+                    StatusId = table.Column<int>(nullable: false),
                     Title = table.Column<string>(maxLength: 60, nullable: false),
                     UpdateDate = table.Column<DateTime>(nullable: false)
                 },
@@ -211,11 +240,23 @@ namespace BugTrackerService.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_Tickets_Priorities_PriorityId",
+                        column: x => x.PriorityId,
+                        principalTable: "Priorities",
+                        principalColumn: "PriorityId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Tickets_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "ProductId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tickets_Statuses_StatusId",
+                        column: x => x.StatusId,
+                        principalTable: "Statuses",
+                        principalColumn: "StatusId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -319,9 +360,19 @@ namespace BugTrackerService.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Tickets_PriorityId",
+                table: "Tickets",
+                column: "PriorityId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tickets_ProductId",
                 table: "Tickets",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_StatusId",
+                table: "Tickets",
+                column: "StatusId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -369,7 +420,13 @@ namespace BugTrackerService.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
+                name: "Priorities");
+
+            migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Statuses");
 
             migrationBuilder.DropSequence(
                 name: "Id",

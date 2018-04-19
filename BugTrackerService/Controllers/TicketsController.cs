@@ -14,7 +14,6 @@ using BugTrackerService.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
-using System.Net;
 using Microsoft.Extensions.Logging;
 using BugTrackerService.Extensions;
 
@@ -29,10 +28,10 @@ namespace BugTrackerService.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ILogger<TicketsController> _logger;
 
-        public TicketsController(ApplicationDbContext context, 
-            UserManager<User> userManager, 
-            IEmailSender emailSender, 
-            IHostingEnvironment hostingEnvironment, 
+        public TicketsController(ApplicationDbContext context,
+            UserManager<User> userManager,
+            IEmailSender emailSender,
+            IHostingEnvironment hostingEnvironment,
             ILogger<TicketsController> logger)
         {
             _context = context;
@@ -51,7 +50,12 @@ namespace BugTrackerService.Controllers
             ViewData["AssignedSortParm"] = sortOrder == "Assigned" ? "ass_desc" : "Assigned";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
             ViewData["CurrentFilter"] = searchString;
-            var tickets = from s in _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product)
+            var tickets = from s in _context.Tickets
+                          .Include(c => c.Owner)
+                          .Include(e => e.Employee)
+                          .Include(p => p.Product)
+                          .Include(s => s.Status)
+                          .Include(pr => pr.Priority)
                           select s;
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -118,25 +122,27 @@ namespace BugTrackerService.Controllers
             var ticket = ticketModel.Ticket;
             ticket.ProductId = ticketModel.ProductId;
             ticket.Product = await _context.Products.SingleAsync(p => p.ProductId.Equals(ticket.ProductId));
-            ticket.Status = Status.Queue;
+            ticket.StatusId = 1;
+            ticket.Status = await _context.Statuses.SingleAsync(s => s.StatusId.Equals(1));
             ticket.CreateDate = DateTime.Now;
             ticket.UpdateDate = DateTime.Now;
-            ticket.Priority = Priority.Medium;
+            ticket.PriorityId = 1;
+            ticket.Priority = await _context.Priorities.SingleAsync(s => s.PriorityId.Equals(1));
             ticket.OwnerId = user.Id;
             ticket.Owner = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));
-            
+
             await _userManager.AddToRoleAsync(user, "Owner");
 
             {
                 List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync(_hostingEnvironment,
-                    _context, 
+                    _context,
                     ticket.TicketId,
                     Request.Form.Files);
                 ticket.FileDetails = fileDetails;
             }
             if (ModelState.IsValid)
             {
-                
+
                 _context.Tickets.Add(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -155,16 +161,21 @@ namespace BugTrackerService.Controllers
             var ticket = await _context.Tickets.Include(u => u.Owner)
                 .Include(e => e.Employee)
                 .Include(m => m.Product)
-                .Include(f=>f.FileDetails)
-                .SingleOrDefaultAsync(m => m.TicketId == id);
+                .Include(f => f.FileDetails)
+                .Include(p => p.Priority)
+                .Include(s => s.Status)
+                .SingleAsync(m => m.TicketId == id);
             Product[] products = _context.Products.ToArray();
-            User[] users = _context.Users.Where(u => u.WorkerCardNumber != null).ToArray();
+            Status[] statuses = _context.Statuses.ToArray();
+            Priority[] priorities = _context.Priorities.ToArray();
+            User[] users = _context.Users.Where(u => !String.IsNullOrEmpty(u.WorkerCardNumber) && !u.WorkerCardNumber.Equals("0")).ToArray();
             var model = new TicketCreateEditViewModel()
             {
                 Ticket = ticket,
-                Products = products.Select(x => new SelectListItem { Value = x.ProductId.ToString(), Text = x.Name, Selected = true })
-                ,
-                Users = users.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.FullName, Selected = true })
+                Products = products.Select(x => new SelectListItem { Value = x.ProductId.ToString(), Text = x.Name, Selected = false }),
+                Users = users.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.FullName, Selected = false }),
+                Statuses = statuses.Select(x => new SelectListItem { Value = x.StatusId.ToString(), Text = x.Name, Selected = false }),
+                Priorities = priorities.Select(x => new SelectListItem { Value = x.PriorityId.ToString(), Text=x.Name, Selected = false})
             };
             if (ticket == null)
             {
@@ -184,11 +195,13 @@ namespace BugTrackerService.Controllers
             {
                 return NotFound();
             }
-            var oldTicket = await _context.Tickets.SingleOrDefaultAsync(t => t.TicketId == ticket.TicketId);
+            var oldTicket = await _context.Tickets.SingleAsync(t => t.TicketId.Equals(ticket.TicketId));
             oldTicket.Title = ticket.Title;
             oldTicket.Description = ticket.Description;
-            oldTicket.Priority = ticket.Priority;
-            oldTicket.Status = ticket.Status;
+            oldTicket.PriorityId = ticket.PriorityId;
+            oldTicket.Priority = await _context.Priorities.SingleAsync(p => p.PriorityId.Equals(ticket.PriorityId));
+            oldTicket.StatusId = ticket.StatusId;
+            oldTicket.Status = await _context.Statuses.SingleAsync(p => p.StatusId.Equals(ticket.StatusId));
             oldTicket.UpdateDate = DateTime.Now;
             oldTicket.Product = ticket.Product;
             if (ticketModel.Users != null)
@@ -225,7 +238,7 @@ namespace BugTrackerService.Controllers
             }
             if (ModelState.IsValid)
             {
-                
+
                 try
                 {
                     var user = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.OwnerId));
@@ -257,8 +270,16 @@ namespace BugTrackerService.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(c => c.Owner).Include(e => e.Employee).Include(p => p.Product).Include(c => c.Comments).Include(f => f.FileDetails).FirstAsync(m => m.TicketId == id);
-            var model = new TicketCommentViewModel() { Ticket = ticket, Comment = new Comment()};
+            var ticket = await _context.Tickets
+                .Include(c => c.Owner)
+                .Include(e => e.Employee)
+                .Include(p => p.Product)
+                .Include(c => c.Comments)
+                .Include(f => f.FileDetails)
+                .Include(s => s.Status)
+                .Include(pr => pr.Priority)
+                .FirstAsync(m => m.TicketId == id);
+            var model = new TicketCommentViewModel() { Ticket = ticket, Comment = new Comment() };
             if (ticket == null)
             {
                 _logger.LogDebug("Ticket not found");
@@ -273,7 +294,7 @@ namespace BugTrackerService.Controllers
         {
             var ticket = await _context.Tickets
                 .FirstAsync(m => m.TicketId == id);
-            if(ticket == null)
+            if (ticket == null)
             {
                 return NotFound();
             }
@@ -350,7 +371,7 @@ namespace BugTrackerService.Controllers
                 if (System.IO.File.Exists(filePath))
                 {
                     System.IO.File.Delete(filePath);
-                    
+
                 }
             }
             _context.Tickets.Remove(ticket);

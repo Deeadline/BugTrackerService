@@ -1,7 +1,7 @@
 ﻿@model BugTrackerService.Models.TicketViewModels.TicketCommentViewModel
 @inject UserManager<User> UserManager
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Details of bug";
 }
 
 <h2>Details</h2>
@@ -47,16 +47,16 @@
             @Html.DisplayFor(model => model.Ticket.Description)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Ticket.Status)
+            @Html.DisplayNameFor(model => model.Ticket.StatusId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Ticket.Status)
+            @Html.DisplayFor(model => model.Ticket.Status.Name)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Ticket.Priority)
+            @Html.DisplayNameFor(model => model.Ticket.PriorityId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Ticket.Priority)
+            @Html.DisplayFor(model => model.Ticket.Priority.Name)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Ticket.CreateDate)
@@ -77,7 +77,6 @@
             @foreach(var comment in Model.Ticket.Comments)
             {
                 @comment.Content <br/>
-
             }
         </dd>
     </dl>

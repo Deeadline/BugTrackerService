@@ -9,26 +9,55 @@
     padding-left: 15px;
     padding-right: 20px;
 }
-/* Carousel */
-.carousel-caption p {
-    font-size: 20px;
-    line-height: 1.4;
+.default{
+    background-color: dimgrey;
+    color: white;
+    border-radius: 4px;
+    border-color: black;
+    padding: 6px 12px;
+    border: 1px solid transparent;
 }
-
-/* Make .svg files in the carousel display properly in older browsers */
-.carousel-inner .item img[src$=".svg"] {
-    width: 100%;
+.medium {
+    background-color: #f0ad4e;
+    color: white;
+    border-radius: 4px;
+    padding: 6px 12px;
+    border-color: #eea236;
+    border: 1px solid transparent;
 }
-
-/* QR code generator */
-#qrCode {
-    margin: 15px;
+.table{
+    font-size: 12px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
-
-/* Hide/rearrange for smaller screens */
-@media screen and (max-width: 767px) {
-    /* Hide captions */
-    .carousel-caption {
-        display: none;
-    }
+.reject {
+    background-color: red;
+    color: white;
+    border-radius: 4px;
+    padding: 6px 12px;
+    border-color: red;
+    border: 1px solid transparent;
+}
+.progr {
+    background-color: lightskyblue;
+    color: white;
+    border-radius: 4px;
+    padding: 6px 12px;
+    border-color: skyblue;
+    border: 1px solid transparent;
+}
+.test {
+    background-color: yellowgreen;
+    color: white;
+    border-radius: 4px;
+    padding: 6px 12px;
+    border-color: lightgreen;
+    border: 1px solid transparent;
+}
+.succ {
+    background-color: limegreen;
+    color: white;
+    border-radius: 4px;
+    padding: 6px 12px;
+    border-color: seagreen;
+    border: 1px solid transparent;
 }

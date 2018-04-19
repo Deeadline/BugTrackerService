@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using BugTrackerService.Models;
 using BugTrackerService.Data.Models;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -15,11 +10,14 @@ namespace BugTrackerService.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+
         }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<Status> Statuses { get; set; }
+        public DbSet<Priority> Priorities { get; set; }
         public DbSet<FileDetail> FileDetail { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,8 +27,7 @@ namespace BugTrackerService.Data
                 .IncrementsBy(1)
                 .HasMin(0);
             modelBuilder.Entity<Ticket>()
-                .Property(o => o.TicketId)
-                .HasDefaultValueSql("NEXT VALUE FOR shared.Id");
+                .Property(o => o.TicketId);
             modelBuilder.Entity<User>()
                 .ToTable("Users");
             modelBuilder.Entity<User>()
