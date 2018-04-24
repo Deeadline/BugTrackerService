@@ -8,67 +8,75 @@
 
 <h4>Ticket</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Ticket.TicketId" />
-
-            <div class="form-group">
-                <label asp-for="Ticket.OwnerId" class="control-label"></label>
-                @Html.DisplayFor(u => u.Ticket.Owner.FullName)
-            </div>
+<div class="container">
+    <form asp-action="Edit" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Ticket.TicketId" />
+        <div class="row">
             @await Html.PartialAsync("_AssignedPartial")
-            <div class="form-group">
+            <div class="form-group col-md-2">
                 <label asp-for="Ticket.Product" class="control-label"></label>
                 <select asp-for="Ticket.ProductId" asp-items="Model.Products" class="form-control"></select>
                 <span asp-validation-for="Ticket.Product" class="text-danger"></span>
             </div>
-            <div class="form-group">
+        </div>
+        <div class="row">
+            <div class="col-md-5 form-group">
                 <label asp-for="Ticket.Title" class="control-label"></label>
                 <input asp-for="Ticket.Title" class="form-control" />
                 <span asp-validation-for="Ticket.Title" class="text-danger"></span>
             </div>
-            <div class="form-group">
+        </div>
+        <div class="row">
+            <div class="form-group col-md-5">
                 <label asp-for="Ticket.Description" class="control-label"></label>
-                <input asp-for="Ticket.Description" class="form-control" />
+                <textarea asp-for="Ticket.Description" class="form-control"></textarea>
                 <span asp-validation-for="Ticket.Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Ticket.Status" class="control-label"></label>
-                <select asp-for="Ticket.StatusId" asp-items="Model.Statuses" class="form-control"></select>
-                <span asp-validation-for="Ticket.Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Ticket.Priority" class="control-label"></label>
-                <select asp-for="Ticket.PriorityId" asp-items="Model.Priorities" class="form-control"></select>
-                <span asp-validation-for="Ticket.Priority" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="col-md-10">
-                    <p>Upload one or more files</p>
-                    <input type="file" name="file" multiple />
+        </div>
+        @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+        {
+            <div class="row">
+                <div class="form-group col-md-2 mb-2">
+                    <label asp-for="Ticket.Status" class="control-label"></label>
+                    <select asp-for="Ticket.StatusId" asp-items="Model.Statuses" class="form-control"></select>
+                    <span asp-validation-for="Ticket.Status" class="text-danger"></span>
                 </div>
-                <ul class="attachment">
+                <div class="form-group col-md-2">
+                    <label asp-for="Ticket.Priority" class="control-label"></label>
+                    <select asp-for="Ticket.PriorityId" asp-items="Model.Priorities" class="form-control"></select>
+                    <span asp-validation-for="Ticket.Priority" class="text-danger"></span>
+                </div>
+            </div>
+        }
+        <div class="row form-group ">
+            <div class="col-md-3 col-xs-3 col-lg-3 col-sm-3">
+                <p>Upload one or more files</p>
+                <input type="file" class="form-group" name="file" multiple/>
+            </div>
+            <div class="col-md-3 col-xs-3 col-lg-3 col-sm-3">
+                <ul class="attachment list-group">
                     @foreach (var item in Model.Ticket.FileDetails)
                     {
-                        <li>
+                        <li class="list-group-item">
                             <a class="title" href="/Tickets/DownloadFile/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId">@item.FileName</a>
-                            <a href="javascript:void(0);" data-id="@item.Id" class="deleteItem">X</a>
+                            <a href="javascript:void(0);" data-id="@item.Id" id="deleteItem" class="pull-right">X</a>
                         </li>
                     }
                 </ul>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+        </div>
+        <div class="row">
+            <div class="form-group col-md-offset-2 col-xs-offset-2 col-lg-offset-2 col-sm-offset-2">
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
-        </form>
-    </div>
-</div>
+        </div>
+    </form>
 
-<div>
+<div class="row col-md-2 col-lg-4 col-xs-2 col-sm-2">
     <a asp-action="Index">Back to List</a>
 </div>
+    </div>
 
 @section Scripts {
 

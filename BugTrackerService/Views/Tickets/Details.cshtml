@@ -6,94 +6,107 @@
 
 <h2>Details</h2>
 
-<div>
+<div class="container">
     <h4>Ticket</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Ticket.TicketId)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Ticket.TicketId)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Ticket.OwnerId)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Ticket.Owner.FullName)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Ticket.EmployeeId)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Ticket.Employee.FullName)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Ticket.ProductId)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Ticket.Product.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Ticket.Title)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Ticket.Title)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Ticket.Description)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Ticket.Description)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Ticket.StatusId)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Ticket.Status.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Ticket.PriorityId)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Ticket.Priority.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Ticket.CreateDate)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Ticket.CreateDate)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Ticket.UpdateDate)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Ticket.UpdateDate)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Ticket.Comments)
-        </dt>
-        <dd>
-            @foreach(var comment in Model.Ticket.Comments)
+    <div class="row">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Ticket.OwnerId)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Ticket.Owner.FullName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Ticket.EmployeeId)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Ticket.Employee.FullName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Ticket.ProductId)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Ticket.Product.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Ticket.Title)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Ticket.Title)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Ticket.Description)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Ticket.Description)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Ticket.StatusId)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Ticket.Status.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Ticket.PriorityId)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Ticket.Priority.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Ticket.CreateDate)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Ticket.CreateDate)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Ticket.UpdateDate)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Ticket.UpdateDate)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Ticket.Comments)
+            </dt>
+                @foreach (var comment in Model.Ticket.Comments)
+                {
+                    <dd>
+                        <br/>
+                        <div class="row" style="margin-bottom:6px;">
+                            <div class="col-md-6">
+                                <div class="pull-left"><b>@comment.User.FullName</b></div>
+                                <div class="pull-right">
+                                    @comment.SendTime
+                                    @if ((UserManager.GetUserId(User).Equals(Model.Ticket.OwnerId)) || User.IsInRole("Admin") || User.IsInRole("Employee"))
+                                    {
+                                        <a href="javascript:void(0);" data-id="@comment.CommentID" class="deleteItem">X</a>
+                                    }
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="row"></div>
+                        <div class="row">
+                            <div class="col-md-6" style="margin-bottom:6px;">@comment.Content</div>
+                        </div>
+                        </dd>
+                }
+        </dl>
+        @foreach (var item in Model.Ticket.FileDetails)
+        {
+            if (item.Extension == ".png" || item.Extension == ".jpg" || item.Extension == ".gif" || item.Extension == ".jpeg")
             {
-                @comment.Content <br/>
+                <a class="title" href="/Tickets/DownloadFile/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId">
+                    <img src="/Uploads/@(item.Id + item.Extension)" alt="@item.FileName" height="200 " width="200" />
+                </a><br />
             }
-        </dd>
-    </dl>
-    @foreach (var item in Model.Ticket.FileDetails)
-    {
-        if (item.Extension == ".png" || item.Extension == ".jpg" || item.Extension == ".gif" || item.Extension == ".jpeg")
-        {
-         <a class="title" href="/Tickets/DownloadFile/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId">
-            <img src="/Uploads/@(item.Id + item.Extension)" alt="@item.FileName" height="200 " width="200" />
-         </a><br />
-        }
-        else
-        {
-            <a class="title" href="/Tickets/Download/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId">@item.FileName</a>
-        }
+            else
+            {
+                <a class="title" href="/Tickets/Download/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId">@item.FileName</a>
+            }
 
-    }
+        }
+    </div>
 </div>
 <div class="form-group">
     <form asp-action="Details">
@@ -105,7 +118,7 @@
 </div>
 
 <div>
-    @if ((UserManager.GetUserId(User).Equals(Model.Ticket.OwnerId) && User.IsInRole("Owner")) || User.IsInRole("Admin") || User.IsInRole("Employee"))
+    @if ((UserManager.GetUserId(User).Equals(Model.Ticket.OwnerId)) && User.IsInRole("Owner") || User.IsInRole("Admin") || User.IsInRole("Employee"))
     {
         <div>
             <a asp-action="Edit" asp-route-id="@Model.Ticket.TicketId">Edit</a>
@@ -113,3 +126,32 @@
     }
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+
+    <script>
+        $('.deleteItem').click(function (e) {
+            e.preventDefault();
+            var $ctrl = $(this);
+            if (confirm('Do you really want to delete this file?')) {
+                $.ajax({
+                    url: '@Url.Action("DeleteComment")',
+                    type: 'POST',
+                    data: { id: $(this).data('id') }
+                }).done(function (data) {
+                    console.log($(this).data('id'))
+                    if (data.result) {
+                        $ctrl.closest('dd').remove();
+                    }
+                    else if (!data.result) {
+                        alert(data.Message);
+                    }
+                }).fail(function () {
+                    alert("There is something wrong. Please try again.");
+                })
+
+            }
+        });
+    </script>
+
+}

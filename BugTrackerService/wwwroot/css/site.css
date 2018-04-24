@@ -25,10 +25,6 @@
     border-color: #eea236;
     border: 1px solid transparent;
 }
-.table{
-    font-size: 12px;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-}
 .reject {
     background-color: red;
     color: white;

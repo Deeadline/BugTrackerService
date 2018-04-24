@@ -87,7 +87,7 @@ namespace BugTrackerService.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(_user);
+            return View(user);
         }
         
         public async Task<IActionResult> Delete(string id)

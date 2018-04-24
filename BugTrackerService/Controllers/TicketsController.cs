@@ -131,8 +131,6 @@ namespace BugTrackerService.Controllers
             ticket.OwnerId = user.Id;
             ticket.Owner = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));
 
-            await _userManager.AddToRoleAsync(user, "Owner");
-
             {
                 List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync(_hostingEnvironment,
                     _context,
@@ -142,7 +140,7 @@ namespace BugTrackerService.Controllers
             }
             if (ModelState.IsValid)
             {
-
+                await _userManager.AddToRoleAsync(user, "Owner");
                 _context.Tickets.Add(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -198,33 +196,33 @@ namespace BugTrackerService.Controllers
             var oldTicket = await _context.Tickets.SingleAsync(t => t.TicketId.Equals(ticket.TicketId));
             oldTicket.Title = ticket.Title;
             oldTicket.Description = ticket.Description;
-            oldTicket.PriorityId = ticket.PriorityId;
-            oldTicket.Priority = await _context.Priorities.SingleAsync(p => p.PriorityId.Equals(ticket.PriorityId));
-            oldTicket.StatusId = ticket.StatusId;
-            oldTicket.Status = await _context.Statuses.SingleAsync(p => p.StatusId.Equals(ticket.StatusId));
+            if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+            {
+                oldTicket.PriorityId = ticket.PriorityId;
+                oldTicket.Priority = await _context.Priorities.SingleAsync(p => p.PriorityId.Equals(ticket.PriorityId));
+                oldTicket.StatusId = ticket.StatusId;
+                oldTicket.Status = await _context.Statuses.SingleAsync(p => p.StatusId.Equals(ticket.StatusId));
+            }
             oldTicket.UpdateDate = DateTime.Now;
             oldTicket.Product = ticket.Product;
-            if (ticketModel.Users != null)
+            oldTicket.Assigned = ticket.Assigned;
+            if (ticketModel.Users != null && User.IsInRole("Admin"))
             {
-                if (ticket.Assigned)
-                {
-                    oldTicket.Assigned = true;
-                    var user = await GetCurrentUserAsync();
-                    oldTicket.EmployeeId = user.Id;
-                    oldTicket.Employee = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.EmployeeId));
-                    await _userManager.AddToRoleAsync(user, "Assigned");
-                }
-                else if (User.IsInRole("Admin"))
-                {
                     oldTicket.Assigned = true;
                     oldTicket.EmployeeId = ticket.EmployeeId;
                     oldTicket.Employee = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.EmployeeId));
                     await _userManager.AddToRoleAsync(oldTicket.Employee, "Assigned");
-                }
+            }
+            else if (ticket.Assigned)
+            {
+                oldTicket.Assigned = true;
+                var user = await GetCurrentUserAsync();
+                oldTicket.EmployeeId = user.Id;
+                oldTicket.Employee = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.EmployeeId));
+                await _userManager.AddToRoleAsync(user, "Assigned");
             }
             else
             {
-                oldTicket.Assigned = false;
                 oldTicket.EmployeeId = null;
                 oldTicket.Employee = null;
             }
@@ -405,6 +403,29 @@ namespace BugTrackerService.Controllers
                 {
                     System.IO.File.Delete(uploads);
                 }
+                return Json(new { result = true, message = "Success!" });
+            }
+            catch (IOException ex)
+            {
+                return Json(new { result = false, message = ex.Message });
+            }
+
+        }
+        [HttpPost]
+        public async Task<JsonResult> DeleteComment(int? id)
+        {
+            if (id == null)
+            {
+                return Json(new { result = false, message = "Failure!" });
+            }
+            var comment = await _context.Comments.FirstAsync(c => c.CommentID.Equals(id));
+            var ticket = await _context.Tickets.FirstAsync(t => t.TicketId.Equals(comment.TicketID));
+
+            try
+            {
+                ticket.Comments.Remove(comment);
+                _context.Comments.Remove(comment);
+                await _context.SaveChangesAsync();
                 return Json(new { result = true, message = "Success!" });
             }
             catch (IOException ex)

@@ -2,16 +2,17 @@
 
 @if ((User.IsInRole("Employee")))
 {
-    <div class="form-check">
-        @Html.CheckBoxFor(m => m.Ticket.Assigned, new { @checked = "checked" })
-        @Html.LabelFor(m => m.Ticket.Assigned, "Do you want assign?")
-    </div>
+<div class="form-check">
+    <input type="checkbox" id="@Model.Ticket.Assigned" asp-for="@Model.Ticket.Assigned" /> 
+    <label asp-for="@Model.Ticket.Assigned">Do you want assign?</label>
+    <input type="hidden" asp-for="@Model.Ticket.TicketId" />
+</div>
 }
-@if(User.IsInRole("Admin"))
+@if (User.IsInRole("Admin"))
 {
-    <div class="form-group">
-        <label asp-for="Ticket.Employee" class="control-label"></label>
-        <select asp-for="Ticket.EmployeeId" asp-items="Model.Users" class="form-control"></select>
-        <span asp-validation-for="Ticket.Employee" class="text-danger"></span>
-    </div>
+        <div class="col-md-3 form-group">
+            <label asp-for="Ticket.Employee" class="control-label"></label>
+            <select asp-for="Ticket.EmployeeId" asp-items="Model.Users" class="form-control"></select>
+            <span asp-validation-for="Ticket.Employee" class="text-danger"></span>
+        </div>
 }

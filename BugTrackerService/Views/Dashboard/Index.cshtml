@@ -50,7 +50,7 @@
                     <span class=@item.Status.Class>@Html.DisplayFor(modelItem => item.Status.Name)</span>
                 </td>
                 <td>
-                    >@Html.DisplayFor(modelItem => item.Product.Name)
+                    @Html.DisplayFor(modelItem => item.Product.Name)
                 </td>
                 <td>
                     <a asp-controller="Tickets" asp-action="Details" asp-route-id="@item.TicketId">

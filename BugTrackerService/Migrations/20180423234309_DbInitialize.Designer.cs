@@ -11,7 +11,7 @@ using System;
 namespace BugTrackerService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180418130553_DbInitialize")]
+    [Migration("20180423234309_DbInitialize")]
     partial class DbInitialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
