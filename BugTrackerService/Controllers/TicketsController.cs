@@ -120,16 +120,15 @@ namespace BugTrackerService.Controllers
         {
             var user = await GetCurrentUserAsync();
             var ticket = ticketModel.Ticket;
-            ticket.ProductId = ticketModel.ProductId;
-            ticket.Product = await _context.Products.SingleAsync(p => p.ProductId.Equals(ticket.ProductId));
+            ticket.Product = await _context.Products.SingleOrDefaultAsync(p => p.ProductId == ticket.ProductId);
             ticket.StatusId = 1;
-            ticket.Status = await _context.Statuses.SingleAsync(s => s.StatusId.Equals(1));
+            ticket.Status = await _context.Statuses.SingleOrDefaultAsync(s => s.StatusId == 1);
             ticket.CreateDate = DateTime.Now;
             ticket.UpdateDate = DateTime.Now;
             ticket.PriorityId = 1;
-            ticket.Priority = await _context.Priorities.SingleAsync(s => s.PriorityId.Equals(1));
+            ticket.Priority = await _context.Priorities.SingleOrDefaultAsync(s => s.PriorityId == 1);
             ticket.OwnerId = user.Id;
-            ticket.Owner = await _context.Users.SingleAsync(u => u.Id.Equals(ticket.OwnerId));
+            ticket.Owner = await _context.Users.SingleOrDefaultAsync(u => u.Id == ticket.OwnerId);
 
             {
                 List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync(_hostingEnvironment,
@@ -162,7 +161,7 @@ namespace BugTrackerService.Controllers
                 .Include(f => f.FileDetails)
                 .Include(p => p.Priority)
                 .Include(s => s.Status)
-                .SingleAsync(m => m.TicketId == id);
+                .SingleOrDefaultAsync(m => m.TicketId == id);
             Product[] products = _context.Products.ToArray();
             Status[] statuses = _context.Statuses.ToArray();
             Priority[] priorities = _context.Priorities.ToArray();
@@ -193,15 +192,15 @@ namespace BugTrackerService.Controllers
             {
                 return NotFound();
             }
-            var oldTicket = await _context.Tickets.SingleAsync(t => t.TicketId.Equals(ticket.TicketId));
+            var oldTicket = await _context.Tickets.SingleOrDefaultAsync(t => t.TicketId == ticket.TicketId);
             oldTicket.Title = ticket.Title;
             oldTicket.Description = ticket.Description;
             if (User.IsInRole("Admin") || User.IsInRole("Employee"))
             {
                 oldTicket.PriorityId = ticket.PriorityId;
-                oldTicket.Priority = await _context.Priorities.SingleAsync(p => p.PriorityId.Equals(ticket.PriorityId));
+                oldTicket.Priority = await _context.Priorities.SingleOrDefaultAsync(p => p.PriorityId == ticket.PriorityId);
                 oldTicket.StatusId = ticket.StatusId;
-                oldTicket.Status = await _context.Statuses.SingleAsync(p => p.StatusId.Equals(ticket.StatusId));
+                oldTicket.Status = await _context.Statuses.SingleOrDefaultAsync(p => p.StatusId == ticket.StatusId);
             }
             oldTicket.UpdateDate = DateTime.Now;
             oldTicket.Product = ticket.Product;
@@ -210,7 +209,7 @@ namespace BugTrackerService.Controllers
             {
                     oldTicket.Assigned = true;
                     oldTicket.EmployeeId = ticket.EmployeeId;
-                    oldTicket.Employee = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.EmployeeId));
+                    oldTicket.Employee = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.EmployeeId);
                     await _userManager.AddToRoleAsync(oldTicket.Employee, "Assigned");
             }
             else if (ticket.Assigned)
@@ -218,7 +217,7 @@ namespace BugTrackerService.Controllers
                 oldTicket.Assigned = true;
                 var user = await GetCurrentUserAsync();
                 oldTicket.EmployeeId = user.Id;
-                oldTicket.Employee = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.EmployeeId));
+                oldTicket.Employee = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.EmployeeId);
                 await _userManager.AddToRoleAsync(user, "Assigned");
             }
             else
@@ -239,7 +238,7 @@ namespace BugTrackerService.Controllers
 
                 try
                 {
-                    var user = await _context.Users.FirstAsync(u => u.Id.Equals(oldTicket.OwnerId));
+                    var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.OwnerId);
                     var callbackUrl = Url.EmailUpdateLink(oldTicket.TicketId, Request.Scheme);
                     await _emailSender.SendEmailUpdateAsync(user.Email, callbackUrl);
                     _context.Update(oldTicket);
@@ -275,7 +274,7 @@ namespace BugTrackerService.Controllers
                 .Include(f => f.FileDetails)
                 .Include(s => s.Status)
                 .Include(pr => pr.Priority)
-                .FirstAsync(m => m.TicketId == id);
+                .SingleOrDefaultAsync(m => m.TicketId == id);
             var model = new TicketCommentViewModel() { Ticket = ticket, Comment = new Comment() };
             if (ticket == null)
             {
@@ -290,7 +289,7 @@ namespace BugTrackerService.Controllers
         public async Task<IActionResult> Details(int id, TicketCommentViewModel model)
         {
             var ticket = await _context.Tickets
-                .FirstAsync(m => m.TicketId == id);
+                .SingleOrDefaultAsync(m => m.TicketId == id);
             if (ticket == null)
             {
                 return NotFound();
@@ -305,7 +304,10 @@ namespace BugTrackerService.Controllers
                 UserId = user.Id,
                 User = user,
             };
-            ticket.Comments.Add(comment);
+            ticket.Comments = new List<Comment>()
+            {
+                comment
+            };
             ticket.UpdateDate = DateTime.Now;
 
             if (ModelState.IsValid)

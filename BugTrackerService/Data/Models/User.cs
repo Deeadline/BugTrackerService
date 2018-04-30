@@ -25,10 +25,10 @@ namespace BugTrackerService.Data.Models
         }
         [DisplayFormat(NullDisplayText = "No tickets")]
         [Display(Name ="Owner Tickets")]
-        public ICollection<Ticket> OwnerTickets { get; set; }
+        public virtual ICollection<Ticket> OwnerTickets { get; set; }
         [DisplayFormat(NullDisplayText = "No tickets")]
         [Display(Name = "Employee Tickets")]
-        public ICollection<Ticket> EmployeeTickets { get; set; }
+        public virtual ICollection<Ticket> EmployeeTickets { get; set; }
 
     }
 }

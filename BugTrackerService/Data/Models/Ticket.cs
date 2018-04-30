@@ -6,30 +6,31 @@ namespace BugTrackerService.Data.Models
 {
     public class Ticket
     {
-        public Ticket()
-        {
-            FileDetails = new List<FileDetail>();
-            Comments = new List<Comment>();
-        }
         [Key]
         [Display(Name = "ID")]
         public int TicketId { get; set; }
+
         [Display(Name = "Created by")]
         public string OwnerId { get; set; }
-        public User Owner { get; set; }
+        public virtual User Owner { get; set; }
         [Display(Name = "Assigned to")]
         [DisplayFormat(NullDisplayText = "No one is assigned to this ticket")]
+
         public string EmployeeId { get; set; }
-        public User Employee { get; set; }
+        public virtual User Employee { get; set; }
+
         [Display(Name = "Product")]
         public int ProductId { get; set; }
-        public Product Product { get; set; }
+        public virtual Product Product { get; set; }
+
         [Display(Name = "Priority")]
         public int PriorityId { get; set; }
-        public Priority Priority { get; set; }
+        public virtual Priority Priority { get; set; }
+
         [Display(Name = "Status")]
         public int StatusId { get; set; }
-        public Status Status { get; set; }
+        public virtual Status Status { get; set; }
+
         [Required]
         [StringLength(60, MinimumLength = 6)]
         public string Title { get; set; }

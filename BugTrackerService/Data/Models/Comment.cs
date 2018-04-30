@@ -15,8 +15,8 @@ namespace BugTrackerService.Data.Models
         [Display(Name = "Author")]
         public string UserId { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
-        public Ticket Ticket { get; set; }
+        public virtual Ticket Ticket { get; set; }
     }
 }
