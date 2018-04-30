@@ -19,9 +19,18 @@
             </dd>
             <dt>
                 @Html.DisplayNameFor(model => model.Ticket.EmployeeId)
+
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.Ticket.Employee.FullName)
+                @if (Model.Ticket.Employee != null)
+                {
+                    @Html.DisplayFor(model => model.Ticket.Employee.FullName)
+                }
+                else
+                {
+                    @:Not Assigned
+    }
             </dd>
             <dt>
                 @Html.DisplayNameFor(model => model.Ticket.ProductId)
@@ -68,29 +77,29 @@
             <dt>
                 @Html.DisplayNameFor(model => model.Ticket.Comments)
             </dt>
-                @foreach (var comment in Model.Ticket.Comments)
-                {
-                    <dd>
-                        <br/>
-                        <div class="row" style="margin-bottom:6px;">
-                            <div class="col-md-6">
-                                <div class="pull-left"><b>@comment.User.FullName</b></div>
-                                <div class="pull-right">
-                                    @comment.SendTime
-                                    @if ((UserManager.GetUserId(User).Equals(Model.Ticket.OwnerId)) || User.IsInRole("Admin") || User.IsInRole("Employee"))
-                                    {
-                                        <a href="javascript:void(0);" data-id="@comment.CommentID" class="deleteItem">X</a>
-                                    }
-                                </div>
+            @foreach (var comment in Model.Ticket.Comments)
+            {
+                <dd>
+                    <br />
+                    <div class="row" style="margin-bottom:6px;">
+                        <div class="col-md-6">
+                            <div><b>@comment.User.FullName</b></div>
+                            <div >
+                                @comment.SendTime
+                                @if ((UserManager.GetUserId(User).Equals(Model.Ticket.OwnerId)) || User.IsInRole("Admin") || User.IsInRole("Employee"))
+                                {
+                                    <a href="javascript:void(0);" data-id="@comment.CommentID" class="deleteItem">X</a>
+                                }
                             </div>
-                            <div class="clearfix"></div>
                         </div>
-                        <div class="row"></div>
-                        <div class="row">
-                            <div class="col-md-6" style="margin-bottom:6px;">@comment.Content</div>
-                        </div>
-                        </dd>
-                }
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="row"></div>
+                    <div class="row">
+                        <div class="col-md-6" style="margin-bottom:6px;">@comment.Content</div>
+                    </div>
+                </dd>
+            }
         </dl>
         @foreach (var item in Model.Ticket.FileDetails)
         {

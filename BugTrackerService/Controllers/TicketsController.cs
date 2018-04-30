@@ -267,7 +267,6 @@ namespace BugTrackerService.Controllers
                 _logger.LogDebug("Ticket not found");
                 return NotFound();
             }
-
             var ticket = await _context.Tickets
                 .Include(c => c.Owner)
                 .Include(e => e.Employee)
@@ -306,10 +305,7 @@ namespace BugTrackerService.Controllers
                 UserId = user.Id,
                 User = user,
             };
-            ticket.Comments = new List<Comment>
-            {
-                comment
-            };
+            ticket.Comments.Add(comment);
             ticket.UpdateDate = DateTime.Now;
 
             if (ModelState.IsValid)

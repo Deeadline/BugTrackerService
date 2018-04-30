@@ -6,6 +6,11 @@ namespace BugTrackerService.Data.Models
 {
     public class Ticket
     {
+        public Ticket()
+        {
+            FileDetails = new List<FileDetail>();
+            Comments = new List<Comment>();
+        }
         [Key]
         [Display(Name = "ID")]
         public int TicketId { get; set; }

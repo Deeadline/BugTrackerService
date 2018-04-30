@@ -2,15 +2,15 @@
 
 @if ((User.IsInRole("Employee")))
 {
-<div class="form-check">
-    <input type="checkbox" id="@Model.Ticket.Assigned" asp-for="@Model.Ticket.Assigned" /> 
-    <label asp-for="@Model.Ticket.Assigned">Do you want assign?</label>
+<div class="form-group form-check">
+    <input type="checkbox" id="@Model.Ticket.Assigned" asp-for="@Model.Ticket.Assigned" class="form-check-input" /> 
+    <label asp-for="@Model.Ticket.Assigned" class="form-check-label">Do you want assign?</label>
     <input type="hidden" asp-for="@Model.Ticket.TicketId" />
 </div>
 }
 @if (User.IsInRole("Admin"))
 {
-        <div class="col-md-3 form-group">
+        <div class="form-group col-3">
             <label asp-for="Ticket.Employee" class="control-label"></label>
             <select asp-for="Ticket.EmployeeId" asp-items="Model.Users" class="form-control"></select>
             <span asp-validation-for="Ticket.Employee" class="text-danger"></span>

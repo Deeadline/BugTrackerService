@@ -17,28 +17,29 @@
         <a asp-action="Index">Back to Full List</a>
     </div>
 </form>
+<div class="row col-auto">
 <table class="table">
-    <thead>
+    <thead class="thead-dark">
         <tr>
-            <th>
+            <th class="col-2">
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["OwnerSortParm"]">@Html.DisplayNameFor(model => model.OwnerId)</a>
             </th>
-            <th>
+            <th class="col-1">
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["PrioritySortParm"]">@Html.DisplayNameFor(model => model.Priority)</a>
             </th>
-            <th>
+            <th class="col-2">
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParm"]">@Html.DisplayNameFor(model => model.Status)</a>
             </th>
-            <th>
+            <th class="col-1">
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["ProductSortParm"]">@Html.DisplayNameFor(model => model.ProductId)</a>
             </th>
-            <th>
+            <th class="col-2">
                 @Html.DisplayNameFor(model => model.Title)
             </th>
-            <th>
+            <th class="col-2">
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["AssignedSortParm"]">@Html.DisplayNameFor(model => model.EmployeeId)</a>
             </th>
-            <th>
+            <th class="col-2">
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]">@Html.DisplayNameFor(model => model.UpdateDate)</a>
             </th>
             <th></th>
@@ -50,7 +51,7 @@
             if (!item.Status.Name.Equals("Completed") || (ViewData["currentFilter"]!=null && ViewData["currentFilter"].ToString().Equals(item.Title)))
             {
                 <tr>
-                    <td>
+                    <td >
                         @Html.DisplayFor(modelItem => item.Owner.FullName)
                     </td>
                     <td>
@@ -81,9 +82,10 @@
                         @Html.DisplayFor(modelItem => item.UpdateDate)
                     </td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@item.TicketId">Show details</a> |
+                        <a asp-action="Details" asp-route-id="@item.TicketId">Show details</a> 
                         @if (User.IsInRole("Admin"))
                         {
+                            @:|
                             <a asp-action="Delete" asp-route-id="@item.TicketId">Delete</a>
                         }
                     </td>
@@ -92,3 +94,4 @@
         }
     </tbody>
 </table>
+</div>
