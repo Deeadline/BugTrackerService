@@ -18,7 +18,7 @@
     </environment>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-success">
+    <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-warning">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">BugTrackerService</a>
@@ -45,11 +45,11 @@
             </div>
         </div>
     </nav>
-    <div class="container body-content">
+    <div class="container body-content mt-2">
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 - BugTrackerService, Mikołaj Szymański</p>
+            <p class="lead">&copy; 2018 - BugTrackerService, Mikołaj Szymański</p>
         </footer>
     </div>
 

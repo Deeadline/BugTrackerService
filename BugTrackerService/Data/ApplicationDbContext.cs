@@ -23,7 +23,7 @@ namespace BugTrackerService.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasSequence<int>("Id", schema: "shared")
-                .StartsAt(1)
+               .StartsAt(1)
                 .IncrementsBy(1)
                 .HasMin(0);
             modelBuilder.Entity<Ticket>()
@@ -43,6 +43,10 @@ namespace BugTrackerService.Data
                 .WithMany(u => u.OwnerTickets);
             modelBuilder.Entity<Ticket>().HasOne(u => u.Employee)
                 .WithMany(u => u.EmployeeTickets);
+            modelBuilder.Entity<FileDetail>().HasOne(f => f.Ticket)
+                .WithMany(s => s.FileDetails);
+            modelBuilder.Entity<Comment>().HasOne(c => c.Ticket)
+                .WithMany(s => s.Comments);
         }
     }
 }

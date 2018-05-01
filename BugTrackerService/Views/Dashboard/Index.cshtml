@@ -6,10 +6,7 @@
 
 <h2>Your Tickets</h2>
 
-<p>
-
-</p>
-<table class="table">
+<table class="table table-light">
     <thead>
         <tr>
             <th>
@@ -39,40 +36,48 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Owner.FullName)
-                </td>
-                <td>
-                    <span class=@item.Priority.Class>@Html.DisplayFor(modelItem => item.Priority.Name)</span>
-                </td>
-                <td>
-                    <span class=@item.Status.Class>@Html.DisplayFor(modelItem => item.Status.Name)</span>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Product.Name)
-                </td>
-                <td>
-                    <a asp-controller="Tickets" asp-action="Details" asp-route-id="@item.TicketId">
+            if (!item.Status.Name.Equals("Completed") || (ViewData["currentFilter"] != null && ViewData["currentFilter"].ToString().Equals(item.Title)))
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Owner.FullName)
+                    </td>
+                    <td>
+                        <span class="@item.Priority.Class d-inline-block">@Html.DisplayFor(modelItem => item.Priority.Name)</span>
+                    </td>
+                    <td>
+                        <span class="@item.Status.Class d-inline-block">@Html.DisplayFor(modelItem => item.Status.Name)</span>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Product.Name)
+                    </td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.Title)
-                    </a>
-                </td>
-                <td>
-                    @{
-                        if (item.EmployeeId != null)
-                        {
-                            @Html.DisplayFor(modelItem => item.Employee.FullName)
+                    </td>
+                    <td>
+                        @{
+                            if (item.EmployeeId != null)
+                            {
+                                @Html.DisplayFor(modelItem => item.Employee.FullName)
+                            }
+                            else
+                            {
+                                @:Not Assigned
+                            }
                         }
-                        else
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UpdateDate)
+                    </td>
+                    <td>
+                        <a asp-controller="Tickets" asp-action="Details" asp-route-id="@item.TicketId" style="font-size: small;">Show details</a>
+                        @if (User.IsInRole("Admin"))
                         {
-                            @:Not Assigned
+                            <a asp-action="Delete" asp-route-id="@item.TicketId" style="font-size: small;">Delete</a>
                         }
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UpdateDate)
-                </td>
-            </tr>
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>

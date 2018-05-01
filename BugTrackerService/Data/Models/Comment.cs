@@ -10,8 +10,10 @@ namespace BugTrackerService.Data.Models
         public int TicketID { get; set; }
         [Required]
         public string Content { get; set; }
-
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:f}")]
         public DateTime SendTime { get; set; }
+
         [Display(Name = "Author")]
         public string UserId { get; set; }
 

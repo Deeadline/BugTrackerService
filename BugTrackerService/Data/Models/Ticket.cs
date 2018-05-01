@@ -54,7 +54,10 @@ namespace BugTrackerService.Data.Models
         [DisplayFormat(NullDisplayText = "No comments for this Ticket")]
         public List<Comment> Comments { get; set; }
 
-        public bool Assigned { get; set; }
+        [Display(Name = "Files")]
+        [DisplayFormat(NullDisplayText = "No files for this Ticket")]
         public List<FileDetail> FileDetails { get; set; }
+        public bool Assigned { get; set; }
+        
     }
 }

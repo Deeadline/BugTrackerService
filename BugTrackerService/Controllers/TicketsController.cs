@@ -120,6 +120,7 @@ namespace BugTrackerService.Controllers
         {
             var user = await GetCurrentUserAsync();
             var ticket = ticketModel.Ticket;
+            _logger.LogInformation("Ticket ID in Create: " + ticket.TicketId);
             ticket.Product = await _context.Products.SingleOrDefaultAsync(p => p.ProductId == ticket.ProductId);
             ticket.StatusId = 1;
             ticket.Status = await _context.Statuses.SingleOrDefaultAsync(s => s.StatusId == 1);
@@ -130,17 +131,22 @@ namespace BugTrackerService.Controllers
             ticket.OwnerId = user.Id;
             ticket.Owner = await _context.Users.SingleOrDefaultAsync(u => u.Id == ticket.OwnerId);
 
+
+            if (ModelState.IsValid)
             {
+                await _userManager.AddToRoleAsync(user, "Owner");
+                user.OwnerTickets.Add(ticket);
+                _context.Tickets.Add(ticket);
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+                {
                 List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync(_hostingEnvironment,
                     _context,
                     ticket.TicketId,
                     Request.Form.Files);
                 ticket.FileDetails = fileDetails;
-            }
-            if (ModelState.IsValid)
-            {
-                await _userManager.AddToRoleAsync(user, "Owner");
-                _context.Tickets.Add(ticket);
+                }
+                _context.Tickets.Update(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -172,7 +178,7 @@ namespace BugTrackerService.Controllers
                 Products = products.Select(x => new SelectListItem { Value = x.ProductId.ToString(), Text = x.Name, Selected = false }),
                 Users = users.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.FullName, Selected = false }),
                 Statuses = statuses.Select(x => new SelectListItem { Value = x.StatusId.ToString(), Text = x.Name, Selected = false }),
-                Priorities = priorities.Select(x => new SelectListItem { Value = x.PriorityId.ToString(), Text=x.Name, Selected = false})
+                Priorities = priorities.Select(x => new SelectListItem { Value = x.PriorityId.ToString(), Text = x.Name, Selected = false })
             };
             if (ticket == null)
             {
@@ -207,10 +213,11 @@ namespace BugTrackerService.Controllers
             oldTicket.Assigned = ticket.Assigned;
             if (ticketModel.Users != null && User.IsInRole("Admin"))
             {
-                    oldTicket.Assigned = true;
-                    oldTicket.EmployeeId = ticket.EmployeeId;
-                    oldTicket.Employee = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.EmployeeId);
-                    await _userManager.AddToRoleAsync(oldTicket.Employee, "Assigned");
+                oldTicket.Assigned = true;
+                oldTicket.EmployeeId = ticket.EmployeeId;
+                oldTicket.Employee = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.EmployeeId);
+                oldTicket.Employee.EmployeeTickets.Add(oldTicket);
+                await _userManager.AddToRoleAsync(oldTicket.Employee, "Assigned");
             }
             else if (ticket.Assigned)
             {
@@ -218,6 +225,7 @@ namespace BugTrackerService.Controllers
                 var user = await GetCurrentUserAsync();
                 oldTicket.EmployeeId = user.Id;
                 oldTicket.Employee = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.EmployeeId);
+                oldTicket.Employee.EmployeeTickets.Add(oldTicket);
                 await _userManager.AddToRoleAsync(user, "Assigned");
             }
             else
@@ -266,6 +274,7 @@ namespace BugTrackerService.Controllers
                 _logger.LogDebug("Ticket not found");
                 return NotFound();
             }
+            var user = await GetCurrentUserAsync();
             var ticket = await _context.Tickets
                 .Include(c => c.Owner)
                 .Include(e => e.Employee)

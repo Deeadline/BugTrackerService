@@ -6,6 +6,11 @@ namespace BugTrackerService.Data.Models
 {
     public class User : IdentityUser
     {
+        public User()
+        {
+            OwnerTickets = new List<Ticket>();
+            EmployeeTickets = new List<Ticket>();
+        }
         [Required]
         [StringLength(30, MinimumLength = 1)]
         public string FirstName { get; set; }
