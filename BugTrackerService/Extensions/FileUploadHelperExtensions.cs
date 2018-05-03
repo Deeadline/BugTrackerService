@@ -2,6 +2,7 @@
 using BugTrackerService.Data.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,14 +15,14 @@ namespace BugTrackerService.Extensions
         private static FileStream fileStream = null;
         private static List<FileDetail> fileDetails = new List<FileDetail>();
         public static async Task<List<FileDetail>> UploadFileAsync(this IHostingEnvironment _host,
-            ApplicationDbContext _context, 
-            int Id, 
+            ApplicationDbContext _context,
+            int Id,
             IFormFileCollection files)
         {
-            for(int i=0; i<files.Count; i++)
+            for (int i = 0; i < files.Count; i++)
             {
                 var file = files[i];
-                if(file != null && file.Length > 0)
+                if (file != null && file.Length > 0)
                 {
                     try
                     {

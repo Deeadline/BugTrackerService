@@ -10,6 +10,7 @@ using BugTrackerService.Services;
 using BugTrackerService.Data.Models;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace BugTrackerService
 {
@@ -58,7 +59,10 @@ namespace BugTrackerService
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             app.UseStaticFiles();
 
