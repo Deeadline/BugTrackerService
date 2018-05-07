@@ -33,7 +33,10 @@ namespace BugTrackerService
                 options.AddPolicy("RequireOwnerOrHigher", policy => policy.RequireRole("Admin", "Owner", "Employee"));
             });
 
-            services.AddIdentity<User, IdentityRole>()
+            services.AddIdentity<User, IdentityRole>(conf =>
+            {
+                conf.SignIn.RequireConfirmedEmail = true;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 

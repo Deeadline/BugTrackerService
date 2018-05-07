@@ -171,7 +171,7 @@ namespace BugTrackerService.Controllers
             Product[] products = _context.Products.ToArray();
             Status[] statuses = _context.Statuses.ToArray();
             Priority[] priorities = _context.Priorities.ToArray();
-            User[] users = _context.Users.Where(u => !String.IsNullOrEmpty(u.WorkerCardNumber) && !u.WorkerCardNumber.Equals("0")).ToArray();
+            User[] users = _context.Users.Where(u => !String.IsNullOrEmpty(u.WorkerCardNumber) && !u.WorkerCardNumber.Equals("00-00")).ToArray();
             var model = new TicketCreateEditViewModel()
             {
                 Ticket = ticket,
@@ -211,13 +211,15 @@ namespace BugTrackerService.Controllers
             oldTicket.UpdateDate = DateTime.Now;
             oldTicket.Product = ticket.Product;
             oldTicket.Assigned = ticket.Assigned;
-            if (ticketModel.Users != null && User.IsInRole("Admin"))
+            _logger.LogInformation("Ticket.EmployeeId:" + ticket.EmployeeId);
+            if (User.IsInRole("Admin") && ticket.EmployeeId != null)
             {
-                oldTicket.Assigned = true;
-                oldTicket.EmployeeId = ticket.EmployeeId;
-                oldTicket.Employee = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.EmployeeId);
-                oldTicket.Employee.EmployeeTickets.Add(oldTicket);
-                await _userManager.AddToRoleAsync(oldTicket.Employee, "Assigned");
+                    _logger.LogInformation("Ticket.EmployeeId:" + ticket.EmployeeId);
+                    oldTicket.Assigned = true;
+                    oldTicket.EmployeeId = ticket.EmployeeId;
+                    oldTicket.Employee = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.EmployeeId);
+                    oldTicket.Employee.EmployeeTickets.Add(oldTicket);
+                    await _userManager.AddToRoleAsync(oldTicket.Employee, "Assigned");
             }
             else if (ticket.Assigned)
             {
