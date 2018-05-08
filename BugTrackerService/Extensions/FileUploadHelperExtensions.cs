@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BugTrackerService.Extensions
@@ -19,6 +20,7 @@ namespace BugTrackerService.Extensions
             int Id,
             IFormFileCollection files)
         {
+            fileDetails = _context.FileDetail.Where(u=>u.TicketId == Id).ToList();
             for (int i = 0; i < files.Count; i++)
             {
                 var file = files[i];

@@ -19,7 +19,9 @@
             </div>
             <div class="form-group col-6">
                 <label asp-for="Ticket.Product"></label>
-                <select asp-for="Ticket.ProductId" asp-items="Model.Products" class="custom-select"></select>
+                <select asp-for="Ticket.ProductId" asp-items="Model.Products" class="custom-select">
+                    <option value="0">Please select one</option>
+                </select>
                 <span asp-validation-for="Ticket.Product" class="text-danger"></span>
             </div>
         </div>
@@ -28,14 +30,33 @@
             <textarea asp-for="Ticket.Description" class="form-control" rows="3" placeholder="Describe your problem!"></textarea>
             <span asp-validation-for="Ticket.Description" class="text-danger"></span>
         </div>
-        <div class="custom-file form-group" style="margin-bottom:10px;">
-            <input type="file" class="custom-file-input" name="file" id="fileInput" multiple />
-            <label class="custom-file-label" for="fileInput">Choose one or more files.</label>
+        <div class="row col-8">
+            <div class="custom-file form-group" style="margin-bottom:10px;">
+                <input type="file" class="custom-file-input" name="file" id="fileInput" onchange="javascript:updateList()" multiple />
+                <label class="custom-file-label" for="fileInput">Choose one or more files.</label>
+            </div>
+            <div class="row col-6" id="fileOutput" style="margin-bottom:10px;">none selected...</div>
         </div>
-        <button type="submit" value="Create" class="btn btn-default">Create</button>
+        <div class="row col-2">
+            <button type="submit" value="Create" class="btn btn-default">Create</button>
+        </div>
     </form>
 </div>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
+@section Scripts{
+    <script>
+        updateList = function () {
+            var input = document.getElementById('fileInput');
+            var output = document.getElementById('fileOutput');
+            output.innerHTML = '<ul>';
+            for (var i = 0; i < input.files.length; i++) {
+                output.innerHTML += '<li>' + input.files.item(i).name + '</li>';
+            }
+            output.innerHTML += '</ul>';
+
+        }
+    </script>
+}

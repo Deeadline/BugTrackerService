@@ -16,7 +16,9 @@
             @await Html.PartialAsync("_AssignedPartial")
             <div class="form-group col-3">
                 <label asp-for="Ticket.Product" class="control-label"></label>
-                <select asp-for="Ticket.ProductId" asp-items="Model.Products" class="custom-select"></select>
+                <select asp-for="Ticket.ProductId" asp-items="Model.Products" class="custom-select">
+                    <option value="0">Please select product</option>
+                </select>
                 <span asp-validation-for="Ticket.Product" class="text-danger"></span>
             </div>
         </div>
@@ -31,33 +33,38 @@
             <span asp-validation-for="Ticket.Description" class="text-danger"></span>
         </div>
         @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
-        {
-            <div class="form-row row">
-                <div class="form-group col-3">
-                    <label asp-for="Ticket.Status" class="control-label"></label>
-                    <select asp-for="Ticket.StatusId" asp-items="Model.Statuses" class="custom-select"></select>
-                    <span asp-validation-for="Ticket.Status" class="text-danger"></span>
-                </div>
-                <div class="form-group col-3">
-                    <label asp-for="Ticket.Priority" class="control-label"></label>
-                    <select asp-for="Ticket.PriorityId" asp-items="Model.Priorities" class="custom-select"></select>
-                    <span asp-validation-for="Ticket.Priority" class="text-danger"></span>
-                </div>
+    {
+        <div class="form-row row">
+            <div class="form-group col-3">
+                <label asp-for="Ticket.Status" class="control-label"></label>
+                <select asp-for="Ticket.StatusId" asp-items="Model.Statuses" class="custom-select">
+                    <option value="0">Please select status</option>
+                </select>
+                <span asp-validation-for="Ticket.Status" class="text-danger"></span>
             </div>
-        }
-        <div class="row col-6">
-            <input type="file" class="custom-file-input" name="file" id="fileInput" multiple />
+            <div class="form-group col-3">
+                <label asp-for="Ticket.Priority" class="control-label"></label>
+                <select asp-for="Ticket.PriorityId" asp-items="Model.Priorities" class="custom-select">
+                    <option value="0">Please select priority</option>
+                </select>
+                <span asp-validation-for="Ticket.Priority" class="text-danger"></span>
+            </div>
+        </div>
+}
+        <div class="row col-6 custom-file form-group" style="margin-bottom:10px;">
+            <input type="file" class="custom-file-input" name="file" id="fileInput" onchange="javascript:updateList()" multiple />
             <label class="custom-file-label" for="fileInput">Choose one or more files.</label>
+            <div id="fileOutput">none selected...</div>
         </div>
         <div class="row" style="margin-bottom:10px; margin-top:10px;">
             <ul class="list-group col-6 ">
                 @foreach (var item in Model.Ticket.FileDetails)
-                {
-                    <li class="list-group-item">
-                        <a class="title" href="/Tickets/DownloadFile/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId">@item.FileName</a>
-                        <a href="javascript:void(0);" data-id="@item.Id" id="deleteItem" class="fas fa-pull-right">X</a>
-                    </li>
-                }
+            {
+                <li class="list-group-item">
+                    <a class="title" href="/Tickets/DownloadFile/?fileName=@(item.Id + item.Extension)&ticketId=@item.TicketId">@item.FileName</a>
+                    <a href="javascript:void(0);" data-id="@item.Id" id="deleteItem" class="fas fa-pull-right">X</a>
+                </li>
+        }
             </ul>
         </div>
         <button type="submit" value="Save" class="btn btn-primary row">Submit</button>
@@ -92,6 +99,16 @@
 
             }
         });
+        updateList = function () {
+            var input = document.getElementById('fileInput');
+            var output = document.getElementById('fileOutput');
+            output.innerHTML = '<ul>';
+            for (var i = 0; i < input.files.length; i++) {
+                output.innerHTML += '<li>' + input.files.item(i).name + '</li>';
+            }
+            output.innerHTML += '</ul>';
+
+        }
     </script>
 
 }

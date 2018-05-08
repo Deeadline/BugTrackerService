@@ -119,36 +119,35 @@ namespace BugTrackerService.Controllers
         public async Task<IActionResult> Create(TicketCreateEditViewModel ticketModel)
         {
             var user = await GetCurrentUserAsync();
-            var ticket = ticketModel.Ticket;
-            _logger.LogInformation("Ticket ID in Create: " + ticket.TicketId);
-            ticket.Product = await _context.Products.SingleOrDefaultAsync(p => p.ProductId == ticket.ProductId);
-            ticket.StatusId = 1;
-            ticket.Status = await _context.Statuses.SingleOrDefaultAsync(s => s.StatusId == 1);
-            ticket.CreateDate = DateTime.Now;
-            ticket.UpdateDate = DateTime.Now;
-            ticket.PriorityId = 1;
-            ticket.Priority = await _context.Priorities.SingleOrDefaultAsync(s => s.PriorityId == 1);
-            ticket.OwnerId = user.Id;
-            ticket.Owner = await _context.Users.SingleOrDefaultAsync(u => u.Id == ticket.OwnerId);
-
-
-            if (ModelState.IsValid)
+            if (ticketModel.Ticket.ProductId != 0)
             {
-                await _userManager.AddToRoleAsync(user, "Owner");
-                user.OwnerTickets.Add(ticket);
-                _context.Tickets.Add(ticket);
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
+                var ticket = ticketModel.Ticket;
+                ticket.Product = await _context.Products.SingleOrDefaultAsync(p => p.ProductId == ticket.ProductId);
+                ticket.StatusId = 1;
+                ticket.Status = await _context.Statuses.SingleOrDefaultAsync(s => s.StatusId == 1);
+                ticket.CreateDate = DateTime.Now;
+                ticket.UpdateDate = DateTime.Now;
+                ticket.PriorityId = 1;
+                ticket.Priority = await _context.Priorities.SingleOrDefaultAsync(s => s.PriorityId == 1);
+                ticket.OwnerId = user.Id;
+                ticket.Owner = await _context.Users.SingleOrDefaultAsync(u => u.Id == ticket.OwnerId);
+
+                if (ModelState.IsValid)
                 {
-                List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync(_hostingEnvironment,
-                    _context,
-                    ticket.TicketId,
-                    Request.Form.Files);
-                ticket.FileDetails = fileDetails;
+                    await _userManager.AddToRoleAsync(user, "Owner");
+                    user.OwnerTickets.Add(ticket);
+                    _context.Tickets.Add(ticket);
+                    _context.Users.Update(user);
+                    await _context.SaveChangesAsync();
+                    List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync(_hostingEnvironment,
+                        _context,
+                        ticket.TicketId,
+                        Request.Form.Files);
+                    ticket.FileDetails = fileDetails;
+                    _context.Tickets.Update(ticket);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                _context.Tickets.Update(ticket);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
             return View(ticketModel);
         }
@@ -194,78 +193,80 @@ namespace BugTrackerService.Controllers
         public async Task<IActionResult> Edit(int id, TicketCreateEditViewModel ticketModel)
         {
             var ticket = ticketModel.Ticket;
-            if (id != ticket.TicketId)
+            if (ticket.ProductId != 0 && ticket.StatusId != 0 && ticket.PriorityId != 0)
             {
-                return NotFound();
-            }
-            var oldTicket = await _context.Tickets.SingleOrDefaultAsync(t => t.TicketId == ticket.TicketId);
-            oldTicket.Title = ticket.Title;
-            oldTicket.Description = ticket.Description;
-            if (User.IsInRole("Admin") || User.IsInRole("Employee"))
-            {
-                oldTicket.PriorityId = ticket.PriorityId;
-                oldTicket.Priority = await _context.Priorities.SingleOrDefaultAsync(p => p.PriorityId == ticket.PriorityId);
-                oldTicket.StatusId = ticket.StatusId;
-                oldTicket.Status = await _context.Statuses.SingleOrDefaultAsync(p => p.StatusId == ticket.StatusId);
-            }
-            oldTicket.UpdateDate = DateTime.Now;
-            oldTicket.Product = ticket.Product;
-            oldTicket.Assigned = ticket.Assigned;
-            _logger.LogInformation("Ticket.EmployeeId:" + ticket.EmployeeId);
-            if (User.IsInRole("Admin") && ticket.EmployeeId != null)
-            {
+                if (id != ticket.TicketId)
+                {
+                    return NotFound();
+                }
+                var oldTicket = await _context.Tickets.SingleOrDefaultAsync(t => t.TicketId == ticket.TicketId);
+                oldTicket.Title = ticket.Title;
+                oldTicket.Description = ticket.Description;
+                if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                {
+                    oldTicket.PriorityId = ticket.PriorityId;
+                    oldTicket.Priority = await _context.Priorities.SingleOrDefaultAsync(p => p.PriorityId == ticket.PriorityId);
+                    oldTicket.StatusId = ticket.StatusId;
+                    oldTicket.Status = await _context.Statuses.SingleOrDefaultAsync(p => p.StatusId == ticket.StatusId);
+                }
+                oldTicket.UpdateDate = DateTime.Now;
+                oldTicket.Product = ticket.Product;
+                oldTicket.Assigned = ticket.Assigned;
+                if (User.IsInRole("Admin") && (ticket.EmployeeId != null && ticket.EmployeeId != "0"))
+                {
                     _logger.LogInformation("Ticket.EmployeeId:" + ticket.EmployeeId);
                     oldTicket.Assigned = true;
                     oldTicket.EmployeeId = ticket.EmployeeId;
                     oldTicket.Employee = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.EmployeeId);
                     oldTicket.Employee.EmployeeTickets.Add(oldTicket);
                     await _userManager.AddToRoleAsync(oldTicket.Employee, "Assigned");
-            }
-            else if (ticket.Assigned)
-            {
-                oldTicket.Assigned = true;
-                var user = await GetCurrentUserAsync();
-                oldTicket.EmployeeId = user.Id;
-                oldTicket.Employee = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.EmployeeId);
-                oldTicket.Employee.EmployeeTickets.Add(oldTicket);
-                await _userManager.AddToRoleAsync(user, "Assigned");
-            }
-            else
-            {
-                oldTicket.EmployeeId = null;
-                oldTicket.Employee = null;
-            }
+                }
+                else if (ticket.Assigned)
+                {
+                    oldTicket.Assigned = true;
+                    var user = await GetCurrentUserAsync();
+                    oldTicket.EmployeeId = user.Id;
+                    oldTicket.Employee = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.EmployeeId);
+                    oldTicket.Employee.EmployeeTickets.Add(oldTicket);
+                    await _userManager.AddToRoleAsync(user, "Assigned");
+                }
+                else
+                {
+                    oldTicket.EmployeeId = null;
+                    oldTicket.Employee = null;
+                }
 
-            {
-                List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync(_hostingEnvironment,
+                if (ModelState.IsValid)
+                {
+
+                    try
+                    {
+                        var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.OwnerId);
+                        var callbackUrl = Url.EmailUpdateLink(oldTicket.TicketId, Request.Scheme);
+                        await _emailSender.SendEmailUpdateAsync(user.Email, callbackUrl);
+
+                        List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync(_hostingEnvironment,
                      _context,
                      oldTicket.TicketId,
                      Request.Form.Files);
-                oldTicket.FileDetails = fileDetails;
-            }
-            if (ModelState.IsValid)
-            {
+                        oldTicket.FileDetails = fileDetails;
 
-                try
-                {
-                    var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.OwnerId);
-                    var callbackUrl = Url.EmailUpdateLink(oldTicket.TicketId, Request.Scheme);
-                    await _emailSender.SendEmailUpdateAsync(user.Email, callbackUrl);
-                    _context.Update(oldTicket);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TicketExists(oldTicket.TicketId))
-                    {
-                        return NotFound();
+                        _context.Update(oldTicket);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!TicketExists(oldTicket.TicketId))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Details), new { id = ticket.TicketId.ToString() });
                 }
-                return RedirectToAction(nameof(Details), new { id = ticket.TicketId.ToString() });
             }
             return View(ticketModel);
         }
