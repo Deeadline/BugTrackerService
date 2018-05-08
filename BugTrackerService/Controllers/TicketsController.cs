@@ -193,7 +193,7 @@ namespace BugTrackerService.Controllers
         public async Task<IActionResult> Edit(int id, TicketCreateEditViewModel ticketModel)
         {
             var ticket = ticketModel.Ticket;
-            if (ticket.ProductId != 0 && ticket.StatusId != 0 && ticket.PriorityId != 0)
+            if (ticket.ProductId != 0)
             {
                 if (id != ticket.TicketId)
                 {
@@ -202,7 +202,7 @@ namespace BugTrackerService.Controllers
                 var oldTicket = await _context.Tickets.SingleOrDefaultAsync(t => t.TicketId == ticket.TicketId);
                 oldTicket.Title = ticket.Title;
                 oldTicket.Description = ticket.Description;
-                if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                if ((User.IsInRole("Admin") || User.IsInRole("Employee")) && (ticket.StatusId != 0 && ticket.PriorityId != 0))
                 {
                     oldTicket.PriorityId = ticket.PriorityId;
                     oldTicket.Priority = await _context.Priorities.SingleOrDefaultAsync(p => p.PriorityId == ticket.PriorityId);
@@ -214,7 +214,6 @@ namespace BugTrackerService.Controllers
                 oldTicket.Assigned = ticket.Assigned;
                 if (User.IsInRole("Admin") && (ticket.EmployeeId != null && ticket.EmployeeId != "0"))
                 {
-                    _logger.LogInformation("Ticket.EmployeeId:" + ticket.EmployeeId);
                     oldTicket.Assigned = true;
                     oldTicket.EmployeeId = ticket.EmployeeId;
                     oldTicket.Employee = await _context.Users.SingleOrDefaultAsync(u => u.Id == oldTicket.EmployeeId);

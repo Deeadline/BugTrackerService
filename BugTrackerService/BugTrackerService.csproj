@@ -12,12 +12,12 @@
 
 
   <ItemGroup>
-    <PackageReference Include="bootstrap" Version="4.1.0" />
-    <PackageReference Include="bootstrap.sass" Version="4.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.2" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" PrivateAssets="All" />
+    <PackageReference Include="bootstrap" Version="4.1.1" />
+    <PackageReference Include="bootstrap.sass" Version="4.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.3" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.4" PrivateAssets="All" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="1.1.0" />
   </ItemGroup>
 
@@ -28,34 +28,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Publish\wwwroot\lib\bootstrap\.github\CONTRIBUTING.md" />
-    <None Include="Publish\wwwroot\lib\bootstrap\.github\ISSUE_TEMPLATE\bug.md" />
-    <None Include="Publish\wwwroot\lib\bootstrap\.github\ISSUE_TEMPLATE\feature.md" />
-    <None Include="Publish\wwwroot\lib\bootstrap\.github\SUPPORT.md" />
     <None Include="Views\Account\AccessDenied.cshtml" />
     <None Include="Views\Account\ConfirmEmail.cshtml" />
-    <None Include="Views\Account\ExternalLogin.cshtml" />
     <None Include="Views\Account\ForgotPassword.cshtml" />
     <None Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
     <None Include="Views\Account\Lockout.cshtml" />
     <None Include="Views\Account\Login.cshtml" />
-    <None Include="Views\Account\LoginWith2fa.cshtml" />
-    <None Include="Views\Account\LoginWithRecoveryCode.cshtml" />
     <None Include="Views\Account\Register.cshtml" />
     <None Include="Views\Account\ResetPassword.cshtml" />
     <None Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <None Include="Views\Account\SignedOut.cshtml" />
     <None Include="Views\Home\Index.cshtml" />
     <None Include="Views\Manage\ChangePassword.cshtml" />
-    <None Include="Views\Manage\Disable2fa.cshtml" />
-    <None Include="Views\Manage\EnableAuthenticator.cshtml" />
-    <None Include="Views\Manage\ExternalLogins.cshtml" />
-    <None Include="Views\Manage\GenerateRecoveryCodes.cshtml" />
     <None Include="Views\Manage\Index.cshtml" />
     <None Include="Views\Manage\ResetAuthenticator.cshtml" />
     <None Include="Views\Manage\SetPassword.cshtml" />
-    <None Include="Views\Manage\ShowRecoveryCodes.cshtml" />
-    <None Include="Views\Manage\TwoFactorAuthentication.cshtml" />
     <None Include="Views\Manage\_Layout.cshtml" />
     <None Include="Views\Manage\_ManageNav.cshtml" />
     <None Include="Views\Manage\_StatusMessage.cshtml" />

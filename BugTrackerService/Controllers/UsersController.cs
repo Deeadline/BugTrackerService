@@ -22,13 +22,11 @@ namespace BugTrackerService.Controllers
             _userManager = userManager;
         }
 
-        // GET: Users
         public async Task<IActionResult> Index()
         {
             return View(await _context.User.ToListAsync());
         }
 
-        // GET: Users/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
