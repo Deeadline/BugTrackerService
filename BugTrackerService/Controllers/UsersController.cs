@@ -121,7 +121,16 @@ namespace BugTrackerService.Controllers
 
             if (ModelState.IsValid)
             {
-                var user = new User { FirstName = model.Name, LastName = model.Surname, Email = model.Email, UserName = model.Email, CompanyName = model.CompanyName, PhoneNumber = model.PhoneNumber, WorkerCardNumber = model.WorkerCardNumber };
+                var user = new User
+                {
+                    FirstName = model.Name,
+                    LastName = model.Surname,
+                    Email = model.Email,
+                    UserName = model.Email,
+                    CompanyName = model.CompanyName,
+                    PhoneNumber = model.PhoneNumber,
+                    WorkerCardNumber = model.WorkerCardNumber
+                };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

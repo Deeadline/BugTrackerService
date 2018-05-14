@@ -22,23 +22,17 @@ namespace BugTrackerService.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ManageController> _logger;
-        private readonly UrlEncoder _urlEncoder;
-
-        private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
-        private const string RecoveryCodesKey = nameof(RecoveryCodesKey);
 
         public ManageController(
           UserManager<User> userManager,
           SignInManager<User> signInManager,
           IEmailSender emailSender,
-          ILogger<ManageController> logger,
-          UrlEncoder urlEncoder)
+          ILogger<ManageController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
-            _urlEncoder = urlEncoder;
         }
 
         [TempData]

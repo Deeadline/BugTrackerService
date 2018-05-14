@@ -58,7 +58,10 @@ namespace BugTrackerService.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
             var user = await dbContext.Users.SingleAsync(u => u.Email.Equals(model.Email));
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, lockoutOnFailure: true);
+            var result = await _signInManager.PasswordSignInAsync(user.UserName,
+                model.Password,
+                model.RememberMe,
+                lockoutOnFailure: true);
             if (ModelState.IsValid)
             {
                 if (result.Succeeded)
@@ -106,24 +109,23 @@ namespace BugTrackerService.Controllers
 
             if (ModelState.IsValid)
             {
-                var user = new User { FirstName = model.Name, LastName = model.Surname, Email = model.Email, UserName = model.Email, CompanyName = model.CompanyName, PhoneNumber = model.PhoneNumber };
+                var user = new User
+                {
+                    FirstName = model.Name,
+                    LastName = model.Surname,
+                    Email = model.Email, UserName = model.Email,
+                    CompanyName = model.CompanyName,
+                    PhoneNumber = model.PhoneNumber
+                };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    if (model.Email.Equals("admin@admin.admin"))
-                    {
-                        await _userManager.AddToRoleAsync(user, "Admin");
-                    }
-                    else
-                    {
-                        await _userManager.AddToRoleAsync(user, "User");
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-                        await _emailSender.SendEmailConfirmationAsync(user.Email, callbackUrl);
-                    }
-                    _logger.LogInformation("User created a new account with password.");
+                    await _userManager.AddToRoleAsync(user, "User");
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+                    await _emailSender.SendEmailConfirmationAsync(user.Email, callbackUrl);
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    await _signInManager.SignInAsync(user, isPersistent: true);
                     _logger.LogInformation("User created a new account with password.");
 
                     await _userManager.AddClaimAsync(user, new Claim("FirstName", user.FirstName));
@@ -134,7 +136,6 @@ namespace BugTrackerService.Controllers
                 AddErrors(result);
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 

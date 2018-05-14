@@ -41,6 +41,7 @@ namespace BugTrackerService.Controllers
             _logger = logger;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
             ViewData["OwnerSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -102,7 +103,7 @@ namespace BugTrackerService.Controllers
             }
             return View(await tickets.AsNoTracking().ToListAsync());
         }
-
+        [HttpGet]
         public IActionResult Create()
         {
             Product[] products = _context.Products.ToArray();
@@ -139,7 +140,8 @@ namespace BugTrackerService.Controllers
                     _context.Tickets.Add(ticket);
                     _context.Users.Update(user);
                     await _context.SaveChangesAsync();
-                    List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync(_hostingEnvironment,
+                    List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync
+                        (_hostingEnvironment,
                         _context,
                         ticket.TicketId,
                         Request.Form.Files);
@@ -151,7 +153,7 @@ namespace BugTrackerService.Controllers
             }
             return View(ticketModel);
         }
-
+        [HttpGet]
         [Authorize(Policy = "RequireOwnerOrHigher")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -244,10 +246,11 @@ namespace BugTrackerService.Controllers
                         var callbackUrl = Url.EmailUpdateLink(oldTicket.TicketId, Request.Scheme);
                         await _emailSender.SendEmailUpdateAsync(user.Email, callbackUrl);
 
-                        List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync(_hostingEnvironment,
-                     _context,
-                     oldTicket.TicketId,
-                     Request.Form.Files);
+                        List<FileDetail> fileDetails = await FileUploadHelperExtensions.UploadFileAsync
+                            (_hostingEnvironment,
+                            _context,
+                            oldTicket.TicketId,
+                            Request.Form.Files);
                         oldTicket.FileDetails = fileDetails;
 
                         _context.Update(oldTicket);
@@ -269,6 +272,8 @@ namespace BugTrackerService.Controllers
             }
             return View(ticketModel);
         }
+
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -295,6 +300,7 @@ namespace BugTrackerService.Controllers
 
             return View(model);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Details(int id, TicketCommentViewModel model)
@@ -346,6 +352,7 @@ namespace BugTrackerService.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -354,7 +361,9 @@ namespace BugTrackerService.Controllers
             }
 
             var ticket = await _context.Tickets
-                .Include(u => u.Owner).Include(e => e.Employee).Include(p => p.Product).SingleOrDefaultAsync(m => m.TicketId == id);
+                .Include(u => u.Owner).Include(e => e.Employee)
+                .Include(p => p.Product)
+                .SingleOrDefaultAsync(m => m.TicketId == id);
             if (ticket == null)
             {
                 return NotFound();
@@ -363,13 +372,13 @@ namespace BugTrackerService.Controllers
             return View(ticket);
         }
 
-        // POST: Tickets/Delete/5
         [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var ticket = await _context.Tickets.Include(e => e.FileDetails).SingleOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _context.Tickets.Include(e => e.FileDetails)
+                .SingleOrDefaultAsync(m => m.TicketId == id);
 
             foreach (var item in ticket.FileDetails)
             {
@@ -385,6 +394,7 @@ namespace BugTrackerService.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
         [HttpPost]
         public async Task<JsonResult> DeleteFile(string id)
         {
@@ -401,11 +411,9 @@ namespace BugTrackerService.Controllers
                     return Json(new { result = false, message = "Failure!" });
                 }
 
-                //Remove from database
                 _context.FileDetail.Remove(fileDetail);
                 await _context.SaveChangesAsync();
 
-                //Delete file from the file system
                 var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "Uploads");
                 var path = Path.Combine(uploads, fileDetail.Id + fileDetail.Extension);
                 if (System.IO.File.Exists(uploads))
@@ -420,6 +428,7 @@ namespace BugTrackerService.Controllers
             }
 
         }
+
         [HttpPost]
         public async Task<JsonResult> DeleteComment(int? id)
         {
