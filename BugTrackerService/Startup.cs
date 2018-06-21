@@ -78,7 +78,6 @@ namespace BugTrackerService
         }
         private async Task CreateRoles(IServiceProvider serviceProvider)
         {
-            //adding customs roles
             var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var UserManager = serviceProvider.GetRequiredService<UserManager<User>>();
             string[] roleNames = { "Admin", "Employee", "User", "Owner", "Assigned" };
@@ -86,7 +85,6 @@ namespace BugTrackerService
 
             foreach (var roleName in roleNames)
             {
-                // creating the roles and seeding them to the database
                 var roleExist = await RoleManager.RoleExistsAsync(roleName);
                 if (!roleExist)
                 {
@@ -94,7 +92,6 @@ namespace BugTrackerService
                 }
 
             }
-            // creating a super user who could maintain the web app
             var _user = await UserManager.FindByEmailAsync("admin@admin.com");
             if (_user == null)
             {
@@ -107,13 +104,13 @@ namespace BugTrackerService
                     CompanyName = "Administracja",
                     PhoneNumber = "00-00",
                     WorkerCardNumber = "0",
+                    EmailConfirmed = true
                 };
 
                 string userPassword = "Adm!n!str@t0r";
                 var createPowerUser = await UserManager.CreateAsync(poweruser, userPassword);
                 if (createPowerUser.Succeeded)
                 {
-                    // here we assign the new user the "Admin" role 
                     await UserManager.AddToRoleAsync(poweruser, "Admin");
                 }
             }
