@@ -8,8 +8,8 @@ namespace BugTrackerService.Services
     {
         public Task SendEmailAsync(string email, string subject, string message)
         {
-            var from = new MailAddress("mikolaj.szymanski.lodz@gmail.com");
-            var password = "Zaq1Xsw2CDA1";
+            var from = new MailAddress("");
+            var password = "";
             var to = new MailAddress(email);
             SmtpClient smtp = new SmtpClient()
             {
